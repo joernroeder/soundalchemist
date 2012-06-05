@@ -1,6 +1,57 @@
 var Data = {
-  sources: new Meteor.Collection("sources")
+  sources: new Meteor.Collection("sources"),
+  scTracks: new Meteor.Collection("scTracks"),
+  scUsers: new Meteor.Collection("scUsers")
 };
+
+Meteor.methods({
+  add: function(sessionId, url) {
+    Data.sources.insert({
+      sessionId: sessionId,
+      url: url
+    });
+
+    if (!this.is_simulation) {
+      // xcxc re-load if X minutes have passed?
+      if (!Data.scTracks.findOne({url: url})) {
+        var data = JSON.parse(Meteor.http.get(
+          "http://api.soundcloud.com/resolve.json?url=" + url +
+            "&client_id=17a48e602c9a59c5a713b456b60fea68").content);
+
+        // xcxc offsets
+        var favoriters = JSON.parse(Meteor.http.get(
+          "http://api.soundcloud.com/tracks/" + data.id +
+            "/favoriters.json" +
+            "?limit=200" +
+            "&client_id=17a48e602c9a59c5a713b456b60fea68").content);
+
+        Data.scTracks.insert({
+          url: url,
+          data: data,
+          favoriters: favoriters
+        });
+
+        _.each(favoriters, function(favoriter) {
+          // xcxc re-load if X minutes have passed?
+          if (!Data.scUsers.findOne({url: favoriter.permalink_url})) {
+            var favorites = JSON.parse(Meteor.http.get(
+              "http://api.soundcloud.com/users/" + favoriter.id +
+                "/favorites.json" +
+                "?limit=200" +
+                "&duration[from]=1200000" +
+                "&client_id=17a48e602c9a59c5a713b456b60fea68").content);
+
+            Data.scUsers.insert({
+              id: favoriter.id,
+              url: favoriter.permalink_url,
+              favorites: favorites
+            });
+          }
+        });
+      }
+    }
+  }
+});
 
 if (Meteor.is_client) {
   var sessionId = null;
@@ -18,12 +69,10 @@ if (Meteor.is_client) {
   }
 
   Meteor.subscribe("sources", sessionId);
+  // XCXC how do i subscribe to the appropriate scTracks?
 
   var add = function() {
-    Data.sources.insert({
-      sessionId: sessionId,
-      url: $('#url').val()
-    });
+    Meteor.call("add", sessionId, $('#url').val());
     $('#url').val('');
   };
   Template.sources.events = {
@@ -35,7 +84,7 @@ if (Meteor.is_client) {
   };
 
   Template.sources.list = function() {
-    return Data.sources.find();
+    return Data.sources.find({sessionId: sessionId});
   };
 
   Template.recommendations.list = function() {
@@ -52,11 +101,18 @@ if (Meteor.is_client) {
 }
 
 if (Meteor.is_server) {
+  _.each(['sources', 'scTracks'], function(collection) {
+    _.each(['insert', 'update', 'remove'], function(method) {
+      Meteor.default_server.method_handlers['/' + collection + '/' + method] = function() {};
+    });
+  });
+
   Meteor.publish("sources", function(sessionId) {
     return Data.sources.find({sessionId: sessionId});
   });
 
-  Meteor.startup(function () {
-    // code to run on server at startup
+  Meteor.publish("scTracks", function(trackIds) {
+    return Data.scTracks.find({trackId: {$in: trackIds}});
   });
 }
+
