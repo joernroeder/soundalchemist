@@ -1,0 +1,41 @@
+<head>
+  <title>soundalchemist XCXC</title>
+  <script type="text/javascript" src="/soundcloud.player.api.js">
+  </script>
+</head>
+
+<body>
+  {{> sources}}
+  <hr />
+  {{> recommendations}}
+</body>
+
+<template name="sources">
+  {{#each list}}
+  {{> track}}
+  {{/each}}
+
+  <input id="url"
+         placeholder="e.g. http://soundcloud.com/russliquid/russ-liquid-soundcloud-mix"
+         />
+  <input id="add" type="button" value="add" />
+</template>
+
+<template name="recommendations">
+  {{#each list}}
+  {{> track}}
+  {{/each}}
+</template>
+
+<template name="track">
+  <p>
+    {{url}}
+    <object height="81" width="100%" id="{{playerId}}" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000">
+      <param name="movie" value="http://player.soundcloud.com/player.swf?url={{escapedUrl}}&enable_api=true&object_id={{playerId}}"></param>
+      <param name="allowscriptaccess" value="always"></param>
+      <embed allowscriptaccess="always" height="81" src="http://player.soundcloud.com/player.swf?url={{escapedUrl}}&enable_api=true&object_id=yourPlayerId" type="application/x-shockwave-flash" width="100%" name="yourPlayerId"></embed>
+    </object>
+  </p>
+</template>
+
+
