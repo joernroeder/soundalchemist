@@ -33,7 +33,7 @@ Meteor.methods({
 
         _.each(favoriters, function(favoriter) {
           // xcxc re-load if X minutes have passed?
-          if (!Data.scUsers.findOne({url: favoriter.permalink_url})) {
+          if (!Data.scUsers.findOne({url: favoriter.uri})) {
             var favorites = JSON.parse(Meteor.http.get(
               "http://api.soundcloud.com/users/" + favoriter.id +
                 "/favorites.json" +
@@ -69,7 +69,7 @@ if (Meteor.is_client) {
   }
 
   Meteor.subscribe("sources", sessionId);
-  // XCXC how do i subscribe to the appropriate scTracks?
+  // XCXC how do i subscribe to the appropriate scTracks? (and remove autopublish)
 
   var add = function() {
     Meteor.call("add", sessionId, $('#url').val());
@@ -83,12 +83,57 @@ if (Meteor.is_client) {
     }
   };
 
-  Template.sources.list = function() {
+  var sources = function() {
     return Data.sources.find({sessionId: sessionId});
   };
 
+  Template.sources.list = function() {
+    return sources();
+  };
+
   Template.recommendations.list = function() {
-    // XCXC RECOMMENDATION ENGINE!!!
+    var sourceUrls = sources().map(function(source) { return source.url; });
+    var scTracks = Data.scTracks.find({url: {$in: sourceUrls}});
+
+    var userFactors = {};
+    scTracks.forEach(function(scTrack) {
+      _.each(scTrack.favoriters, function(favoriter) {
+        if (!userFactors[favoriter.id])
+          userFactors[favoriter.id] = 0;
+        userFactors[favoriter.id] += 1; // xcxc KNOB!
+      });
+    });
+
+    var result = {};
+    _.each(userFactors, function(factor, userId) {
+      var scUser = Data.scUsers.findOne({id: parseInt(userId, 10)});
+      if (scUser) {
+        _.each(scUser.favorites, function(favorite) {
+          if (!result[favorite.permalink_url])
+            result[favorite.permalink_url] = 0;
+          result[favorite.permalink_url] += factor;
+        });
+      } else {
+//        return [{url: '', rank: 'Not loaded yet'}];
+        // not all users are loaded
+      }
+    });
+
+    // xcxc session -> room
+
+    var resultsArray = _.map(result, function(value, key) {
+      return [key, value];
+    });
+    var sortedResultsArray = _.sortBy(resultsArray, function(kv) {
+      return kv[1] * -1 /*descending*/;
+    });
+
+    return _.map(_.first(sortedResultsArray, 15), function(kv) {
+      return {
+        url: kv[0],
+        rank: kv[1]
+      };
+    });
   };
 
   Template.track.escapedUrl = function() {
