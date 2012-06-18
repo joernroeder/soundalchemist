@@ -1,3 +1,5 @@
+// xcxc Status for adding new track
+
 var Data = {
   sources: new Meteor.Collection("sources"),
   scTracks: new Meteor.Collection("scTracks"),
@@ -6,17 +8,23 @@ var Data = {
 
 Meteor.methods({
   add: function(sessionId, url) {
-    Data.sources.insert({
-      sessionId: sessionId,
-      url: url
-    });
 
-    if (!this.is_simulation) {
+    this.unblock();
+
       // xcxc re-load if X minutes have passed?
-      if (!Data.scTracks.findOne({url: url})) {
+    if (!Data.scTracks.findOne({url: url})) {
+
+      if (!this.is_simulation) {
         var data = JSON.parse(Meteor.http.get(
           "http://api.soundcloud.com/resolve.json?url=" + url +
             "&client_id=17a48e602c9a59c5a713b456b60fea68").content);
+
+        Data.sources.insert({
+          sessionId: sessionId,
+          url: url,
+          weight: 1,
+          id: data.id
+        });
 
         // xcxc offsets
         var favoriters = JSON.parse(Meteor.http.get(
@@ -28,28 +36,46 @@ Meteor.methods({
         Data.scTracks.insert({
           url: url,
           data: data,
-          favoriters: favoriters
+          favoriterIds: _.map(favoriters, function(favoriter) {
+            return favoriter.id;
+          })
         });
 
+        var futures = [];
+
         _.each(favoriters, function(favoriter) {
+          console.log('parsing ' + favoriter.username);
+          var favoriterId = favoriter.id;
           // xcxc re-load if X minutes have passed?
-          if (!Data.scUsers.findOne({url: favoriter.uri})) {
-            var favorites = JSON.parse(Meteor.http.get(
-              "http://api.soundcloud.com/users/" + favoriter.id +
+          if (!Data.scUsers.findOne({id: favoriterId})) {
+            var future = new Future;
+            futures.push(future);
+
+            Meteor.http.get(
+              "http://api.soundcloud.com/users/" + favoriterId +
                 "/favorites.json" +
                 "?limit=200" +
                 "&duration[from]=1200000" +
-                "&client_id=17a48e602c9a59c5a713b456b60fea68").content);
+                "&client_id=17a48e602c9a59c5a713b456b60fea68", function(error, result) {
+                  var favorites = result.data;
+                  Data.scUsers.insert({
+                    id: favoriterId,
+                    url: favoriter.permalink_url,
+                    favoriteTracks: _.map(favorites, function(favorite) {
+                      return {url: favorite.permalink_url, id: favorite.id};
+                    })
+                  });
 
-            Data.scUsers.insert({
-              id: favoriter.id,
-              url: favoriter.permalink_url,
-              favorites: favorites
-            });
+                  future.resolver()();
+                });
+
           }
         });
+
+        Future.wait(futures);
       }
     }
+
   }
 });
 
@@ -97,10 +123,15 @@ if (Meteor.is_client) {
 
     var userFactors = {};
     scTracks.forEach(function(scTrack) {
-      _.each(scTrack.favoriters, function(favoriter) {
-        if (!userFactors[favoriter.id])
-          userFactors[favoriter.id] = 0;
-        userFactors[favoriter.id] += 1; // xcxc KNOB!
+      var weight = Data.sources.findOne({url: scTrack.url, sessionId: sessionId}).weight;
+      _.each(scTrack.favoriterIds, function(favoriterId) {
+        if (!userFactors[favoriterId])
+          userFactors[favoriterId] = {rank: 0, spectrum: {}};
+        userFactors[favoriterId].rank += weight;
+
+        if (!userFactors[favoriterId].spectrum[scTrack.url])
+          userFactors[favoriterId].spectrum[scTrack.url] = 0;
+        userFactors[favoriterId].spectrum[scTrack.url] += weight;
       });
     });
 
@@ -108,10 +139,17 @@ if (Meteor.is_client) {
     _.each(userFactors, function(factor, userId) {
       var scUser = Data.scUsers.findOne({id: parseInt(userId, 10)});
       if (scUser) {
-        _.each(scUser.favorites, function(favorite) {
-          if (!result[favorite.permalink_url])
-            result[favorite.permalink_url] = 0;
-          result[favorite.permalink_url] += factor;
+        _.each(scUser.favoriteTracks, function(track) {
+          var favoriteUrl = track.url;
+          if (!result[favoriteUrl])
+            result[favoriteUrl] = {rank: 0, spectrum: {}, id: track.id};
+          result[favoriteUrl].rank += factor.rank;
+
+          _.each(userFactors[userId].spectrum, function(val, url) {
+            if (!result[favoriteUrl].spectrum[url])
+              result[favoriteUrl].spectrum[url] = 0;
+            result[favoriteUrl].spectrum[url] += val;
+          });
         });
       } else {
 //        return [{url: '', rank: 'Not loaded yet'}];
@@ -125,19 +163,48 @@ if (Meteor.is_client) {
       return [key, value];
     });
     var sortedResultsArray = _.sortBy(resultsArray, function(kv) {
-      return kv[1] * -1 /*descending*/;
+      return kv[1].rank * -1 /*descending*/;
     });
 
-    return _.map(_.first(sortedResultsArray, 15), function(kv) {
+    sortedResultsArray = _.filter(sortedResultsArray, function(kv) {
+      var url = kv[0];
+      return !Data.sources.findOne({url: url, sessionId: sessionId});
+    });
+
+    return _.map(_.first(sortedResultsArray, 12), function(kv) {
       return {
         url: kv[0],
-        rank: kv[1]
+        id: kv[1].id,
+        rank: kv[1].rank,
+        spectrum: kv[1].spectrum
       };
     });
   };
 
+  Template['source-track'].events = {
+    'click .up': function() {
+      Data.sources.update(this._id, {$inc: {weight: 1}});
+    },
+    'click .down': function() {
+      Data.sources.update(this._id, {$inc: {weight: -1}});
+    },
+    'click .unmake-source': function() {
+      Data.sources.remove(this._id);
+    }
+  };
+
+  Template['recommendation-track'].events = {
+    'click .make-source': function() {
+      Meteor.call('add', sessionId, this.url);
+    }
+  };
+
+  Template['recommendation-track'].spectrum = function() {
+    return JSON.stringify(this.spectrum);
+  };
+
   Template.track.escapedUrl = function() {
-    return escape(this.url);
+    return escape('http://api.soundcloud.com/tracks/' + this.id);
   };
 
   Template.track.playerId = function() {
@@ -148,7 +215,7 @@ if (Meteor.is_client) {
 if (Meteor.is_server) {
   _.each(['sources', 'scTracks'], function(collection) {
     _.each(['insert', 'update', 'remove'], function(method) {
-      Meteor.default_server.method_handlers['/' + collection + '/' + method] = function() {};
+//xcxc      Meteor.default_server.method_handlers['/' + collection + '/' + method] = function() {};
     });
   });
 

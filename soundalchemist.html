@@ -12,7 +12,7 @@
 
 <template name="sources">
   {{#each list}}
-  {{> track}}
+  {{> source-track}}
   {{/each}}
 
   <input id="url"
@@ -23,22 +23,31 @@
 
 <template name="recommendations">
   {{#each list}}
-  {{> track}}
+  {{> recommendation-track}}
   {{/each}}
 </template>
 
-<template name="track">
+<template name="source-track">
   <p>
-    <a href="{{url}}" target="_blank">{{url}}</a>
-    {{#if rank}}{{rank}}{{/if}}
-<!--
-    <object height="81" width="100%" id="{{playerId}}" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000">
-      <param name="movie" value="http://player.soundcloud.com/player.swf?url={{escapedUrl}}&enable_api=true&object_id={{playerId}}"></param>
-      <param name="allowscriptaccess" value="always"></param>
-      <embed allowscriptaccess="always" height="81" src="http://player.soundcloud.com/player.swf?url={{escapedUrl}}&enable_api=true&object_id=yourPlayerId" type="application/x-shockwave-flash" width="100%" name="yourPlayerId"></embed>
-    </object>
--->
+    {{weight}} <a class="up" href="#">up</a> <a class="down" href="#">down</a>
+    <a href="#" class="unmake-source">unstore as a source</a>
+    {{> track}}
+
   </p>
 </template>
 
+<template name="recommendation-track">
+  <p>
+    {{rank}}
+    {{spectrum}}
+    <a href="#" class="make-source">store as a source</a>
+
+    {{> track}}
+  </p>
+</template>
+
+<template name="track">
+
+<iframe id="{{playerId}}" frameborder="no" height="166" scrolling="no" src="http://w.soundcloud.com/player/?url={{escapedUrl}}&auto_play=false&show_artwork=true&color=d31502" width="100%"></iframe>
+</template>
 
