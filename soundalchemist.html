@@ -5,12 +5,35 @@
 </head>
 
 <body>
+  {{> main}}
+</body>
+
+<template name="main">
+  {{#if isLobby}}
+  {{> lobby}}
+  {{else}}
+  {{> room}}
+  {{/if}}
+</template>
+
+<!-- xcxc get rid of a href="#" -->
+
+<template name="lobby">
+  <a href="#" id="newroom">new room</a>
+</template>
+
+<template name="room">
   {{> sources}}
   <hr />
   {{> recommendations}}
-</body>
+</template>
+
+<template name="processing">
+  {{#if processing}}<p>processing...</p>{{/if}}
+</template>
 
 <template name="sources">
+  {{> processing}}
   {{#each list}}
   {{> source-track}}
   {{/each}}
@@ -31,8 +54,8 @@
   <p>
     {{weight}} <a class="up" href="#">up</a> <a class="down" href="#">down</a>
     <a href="#" class="unmake-source">unstore as a source</a>
-    {{> track}}
-
+    <a href="{{url}}" target="_blank">{{url}}</a>
+    {{trackId}}
   </p>
 </template>
 
@@ -40,8 +63,9 @@
   <p>
     {{rank}}
     {{spectrum}}
-    <a href="#" class="make-source">store as a source</a>
-
+    <a href="#" class="upvote">+1</a>
+    <a href="#" class="downvote">-1</a>
+    <a href="#" class="skip">skip</a>
     {{> track}}
   </p>
 </template>

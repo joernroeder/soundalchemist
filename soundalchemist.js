@@ -1,104 +1,143 @@
-// xcxc Status for adding new track
+// indexes:
+// > db.tracks.ensureIndex({trackId: 1})
+// > db["room-track"].ensureIndex({roomId: 1, trackId: 1, weight: 1})
+
+/// TASKS:
+// - "turn the knob"
+// - "spectrum"
+// - "skip all"
+// - "return to lobby"
+// - "publish room"
+// - something about playing in other tab?
 
 var Data = {
-  sources: new Meteor.Collection("sources"),
-  scTracks: new Meteor.Collection("scTracks"),
-  scUsers: new Meteor.Collection("scUsers")
+  tracks: new Meteor.Collection("tracks"),
+  rooms: new Meteor.Collection("rooms"),
+  "room-track": new Meteor.Collection("room-track")
 };
 
 Meteor.methods({
-  add: function(sessionId, url) {
+  add: function(roomId, url, weight) {
+    if (this.is_simulation) {
+      Data.rooms.update(roomId, {$set: {processing: true}});
+      return;
+    };
 
-    this.unblock();
+    var trackId = Meteor.http.get(
+      "http://api.soundcloud.com/resolve.json?url=" + url +
+        "&client_id=17a48e602c9a59c5a713b456b60fea68").data.id;
 
-      // xcxc re-load if X minutes have passed?
-    if (!Data.scTracks.findOne({url: url})) {
+    console.log('tid', trackId);
 
-      if (!this.is_simulation) {
-        var data = JSON.parse(Meteor.http.get(
-          "http://api.soundcloud.com/resolve.json?url=" + url +
-            "&client_id=17a48e602c9a59c5a713b456b60fea68").content);
+    Meteor.call("addById", roomId, trackId, weight);
+  },
 
-        Data.sources.insert({
-          sessionId: sessionId,
-          url: url,
-          weight: 1,
-          id: data.id
-        });
+  addById: function(roomId, trackId, weight) {
+    if (this.is_simulation) {
+      Data.rooms.update(roomId, {$set: {processing: true}});
+      return;
+    };
 
-        // xcxc offsets
-        var favoriters = JSON.parse(Meteor.http.get(
-          "http://api.soundcloud.com/tracks/" + data.id +
-            "/favoriters.json" +
-            "?limit=200" +
-            "&client_id=17a48e602c9a59c5a713b456b60fea68").content);
+    if (!roomId)
+      throw new Meteor.Error("roomId must be set");
 
-        Data.scTracks.insert({
-          url: url,
-          data: data,
-          favoriterIds: _.map(favoriters, function(favoriter) {
-            return favoriter.id;
-          })
-        });
-
-        var futures = [];
-
-        _.each(favoriters, function(favoriter) {
-          console.log('parsing ' + favoriter.username);
-          var favoriterId = favoriter.id;
-          // xcxc re-load if X minutes have passed?
-          if (!Data.scUsers.findOne({id: favoriterId})) {
-            var future = new Future;
-            futures.push(future);
-
-            Meteor.http.get(
-              "http://api.soundcloud.com/users/" + favoriterId +
-                "/favorites.json" +
-                "?limit=200" +
-                "&duration[from]=1200000" +
-                "&client_id=17a48e602c9a59c5a713b456b60fea68", function(error, result) {
-                  var favorites = result.data;
-                  Data.scUsers.insert({
-                    id: favoriterId,
-                    url: favoriter.permalink_url,
-                    favoriteTracks: _.map(favorites, function(favorite) {
-                      return {url: favorite.permalink_url, id: favorite.id};
-                    })
-                  });
-
-                  future.resolver()();
-                });
-
-          }
-        });
-
-        Future.wait(futures);
+    var roomTrack = Data["room-track"].findOne({roomId: roomId,
+                                                trackId: trackId});
+    if (!roomTrack) {
+      if (!Data.tracks.findOne({trackId: trackId}) && weight !== 0) {
+        loadTrack(trackId);
       }
+
+      // minutes since epoch
+      var ts = Math.floor((new Date()).getTime() / 1000 / 60);
+      Data["room-track"].insert(
+        {roomId: roomId, trackId: trackId, weight: weight, when: ts});
     }
 
+    Data.rooms.update(roomId, {$unset: {processing: 1}});
+    console.log("done adding");
   }
 });
 
+var loadTrack = function(trackId) {
+  var trackInfo = Meteor.http.get(
+    "http://api.soundcloud.com/tracks/" + trackId +
+      ".json?client_id=17a48e602c9a59c5a713b456b60fea68").data;
+
+  // xcxc offsets
+  var favoriters = Meteor.http.get(
+    "http://api.soundcloud.com/tracks/" + trackId +
+      "/favoriters.json" +
+      "?limit=200" +
+      "&client_id=17a48e602c9a59c5a713b456b60fea68").data;
+
+  // xcxc better term?
+  var influence = {};
+
+  var futures = _.map(favoriters, function(favoriter) {
+//    console.log('parsing ' + favoriter.username);
+    var favoriterId = favoriter.id;
+    var future = new Future;
+
+    Meteor.http.get(
+      "http://api.soundcloud.com/users/" + favoriterId +
+        "/favorites.json" +
+        "?limit=200" +
+        "&duration[from]=1200000" +
+        "&client_id=17a48e602c9a59c5a713b456b60fea68", function(error, result) {
+          var favoriteTracks = result.data;
+          _.each(favoriteTracks, function(track) {
+            if (!influence[track.id])
+              influence[track.id] = 0;
+            influence[track.id]++;
+          });
+
+          future.resolver()();
+        });
+
+    return future;
+  });
+
+  Future.wait(futures);
+  Data.tracks.insert({trackId: trackId, influence: influence, trackInfo: trackInfo});
+};
+
+
 if (Meteor.is_client) {
-  var sessionId = null;
+  SoundalchemistRouter = Backbone.Router.extend({
+    routes: {
+      "": "lobby",
+      ":roomId": "room"
+    },
+    lobby: function() {
+      Session.set("roomId", null);
+    },
+    room: function(roomId) {
+      Session.set("roomId", roomId);
+    },
+    newRoom: function() {
+      this.navigate(Data.rooms.insert({_: 0}));
+    }
+  });
 
-  if (window.location.pathname !== '/') {
-    var path = window.location.pathname.substring(1);
-    if (isNaN(parseInt(path)))
-      window.location.pathname = '/';
-    else
-      sessionId = parseInt(path);
-  }
-  if (!sessionId) {
-    sessionId = Math.floor(Math.random() * 1000000);
-    window.location.pathname = sessionId;
-  }
+  Router = new SoundalchemistRouter();
 
-  Meteor.subscribe("sources", sessionId);
-  // XCXC how do i subscribe to the appropriate scTracks? (and remove autopublish)
+  Meteor.startup(function () {
+    Backbone.history.start({pushState: true});
+  });
+
+  Template.main.isLobby = function() {
+    return !Session.get("roomId");
+  };
+
+  Template.lobby.events = {
+    'click #newroom': function() {
+      Router.newRoom();
+    }
+  };
 
   var add = function() {
-    Meteor.call("add", sessionId, $('#url').val());
+    Meteor.call("add", Session.get("roomId"), $('#url').val(), 1);
     $('#url').val('');
   };
   Template.sources.events = {
@@ -109,93 +148,96 @@ if (Meteor.is_client) {
     }
   };
 
-  var sources = function() {
-    return Data.sources.find({sessionId: sessionId});
+  var getRoom = function() {
+    return Data.rooms.findOne(Session.get('roomId'));
+  };
+
+  Template.processing.processing = function() {
+    var room = getRoom();
+    return room && room.processing;
   };
 
   Template.sources.list = function() {
-    return sources();
+    var room = getRoom();
+    return Data["room-track"].find({roomId: Session.get('roomId'),
+                                    weight: {$ne: 0}},
+                                   {sort: {when: 1}});
   };
 
   Template.recommendations.list = function() {
-    var sourceUrls = sources().map(function(source) { return source.url; });
-    var scTracks = Data.scTracks.find({url: {$in: sourceUrls}});
+    var room = getRoom();
+    console.log('xcxc4', room);
+    if (!room)
+      return [];
 
-    var userFactors = {};
-    scTracks.forEach(function(scTrack) {
-      var weight = Data.sources.findOne({url: scTrack.url, sessionId: sessionId}).weight;
-      _.each(scTrack.favoriterIds, function(favoriterId) {
-        if (!userFactors[favoriterId])
-          userFactors[favoriterId] = {rank: 0, spectrum: {}};
-        userFactors[favoriterId].rank += weight;
+    var results = {};
+    console.log('xcxc2');
+    Data["room-track"].find({roomId: Session.get('roomId')}).forEach(function(roomTrack) {
+      var track = Data.tracks.findOne({trackId: roomTrack.trackId});
+      console.log('xcxc', track);
+      if (!track)
+        return;
 
-        if (!userFactors[favoriterId].spectrum[scTrack.url])
-          userFactors[favoriterId].spectrum[scTrack.url] = 0;
-        userFactors[favoriterId].spectrum[scTrack.url] += weight;
+      var weight = roomTrack.weight;
+      _.each(track.influence, function(count, trackId) {
+        if (!results[trackId])
+          results[trackId] = {rank: 0, spectrum: {}};
+        results[trackId].rank += count * weight;
+
+        if (!results[trackId].spectrum[roomTrack.trackId])
+          results[trackId].spectrum[roomTrack.trackId] = 0;
+        results[trackId].spectrum[roomTrack.trackId] += count * weight;
       });
     });
 
-    var result = {};
-    _.each(userFactors, function(factor, userId) {
-      var scUser = Data.scUsers.findOne({id: parseInt(userId, 10)});
-      if (scUser) {
-        _.each(scUser.favoriteTracks, function(track) {
-          var favoriteUrl = track.url;
-          if (!result[favoriteUrl])
-            result[favoriteUrl] = {rank: 0, spectrum: {}, id: track.id};
-          result[favoriteUrl].rank += factor.rank;
-
-          _.each(userFactors[userId].spectrum, function(val, url) {
-            if (!result[favoriteUrl].spectrum[url])
-              result[favoriteUrl].spectrum[url] = 0;
-            result[favoriteUrl].spectrum[url] += val;
-          });
-        });
-      } else {
-//        return [{url: '', rank: 'Not loaded yet'}];
-        // not all users are loaded
-      }
-    });
-
-    // xcxc session -> room
-
-    var resultsArray = _.map(result, function(value, key) {
+    var resultsArray = _.map(results, function(value, key) {
       return [key, value];
     });
     var sortedResultsArray = _.sortBy(resultsArray, function(kv) {
       return kv[1].rank * -1 /*descending*/;
     });
+    var filteredSortedResultsArray = _.reject(
+      sortedResultsArray, function(kv) {
+        return Data["room-track"].findOne({roomId: Session.get("roomId"),
+                                           trackId: parseInt(kv[0], 10)});
+      });
 
-    sortedResultsArray = _.filter(sortedResultsArray, function(kv) {
-      var url = kv[0];
-      return !Data.sources.findOne({url: url, sessionId: sessionId});
-    });
-
-    return _.map(_.first(sortedResultsArray, 12), function(kv) {
+    return _.map(_.first(filteredSortedResultsArray, 5), function(kv) {
       return {
-        url: kv[0],
-        id: kv[1].id,
-        rank: kv[1].rank,
-        spectrum: kv[1].spectrum
+        trackId: parseInt(kv[0], 10),
+        spectrum: kv[1].spectrum,
+        rank: kv[1].rank
       };
     });
   };
 
   Template['source-track'].events = {
+    //xcxc redo all these
     'click .up': function() {
-      Data.sources.update(this._id, {$inc: {weight: 1}});
+      var incFields = {};
+      incFields["tracks." + this.trackId + ".weight"] = 1;
+      Data.rooms.update(Session.get("roomId"), {$inc: incFields});
     },
     'click .down': function() {
-      Data.sources.update(this._id, {$inc: {weight: -1}});
+      var incFields = {};
+      incFields["tracks." + this.trackId + ".weight"] = -1;
+      Data.rooms.update(Session.get("roomId"), {$inc: incFields});
     },
     'click .unmake-source': function() {
-      Data.sources.remove(this._id);
+      Data["room-track"].remove({roomId: Session.get("roomId"),
+                                 trackId: this.trackId});
     }
   };
 
   Template['recommendation-track'].events = {
-    'click .make-source': function() {
-      Meteor.call('add', sessionId, this.url);
+    'click .upvote': function() {
+      Meteor.call('addById', Session.get("roomId"), this.trackId, 1);
+    },
+    'click .downvote': function() {
+      Meteor.call('addById', Session.get("roomId"), this.trackId, -1);
+    },
+    'click .skip': function() {
+      Meteor.call('addById', Session.get("roomId"), this.trackId, 0);
     }
   };
 
@@ -203,8 +245,13 @@ if (Meteor.is_client) {
     return JSON.stringify(this.spectrum);
   };
 
+  Template['source-track'].url = function() {
+    var track = Data.tracks.findOne({trackId: this.trackId});
+    return track && track.trackInfo && track.trackInfo.permalink_url;
+  };
+
   Template.track.escapedUrl = function() {
-    return escape('http://api.soundcloud.com/tracks/' + this.id);
+    return escape('http://api.soundcloud.com/tracks/' + this.trackId);
   };
 
   Template.track.playerId = function() {
@@ -213,18 +260,37 @@ if (Meteor.is_client) {
 }
 
 if (Meteor.is_server) {
-  _.each(['sources', 'scTracks'], function(collection) {
-    _.each(['insert', 'update', 'remove'], function(method) {
-//xcxc      Meteor.default_server.method_handlers['/' + collection + '/' + method] = function() {};
-    });
+  Meteor.publish("room1", function(roomId) {
+    return Data["room-track"].find({roomId: roomId}, {$sort: {when: 1}});
   });
 
-  Meteor.publish("sources", function(sessionId) {
-    return Data.sources.find({sessionId: sessionId});
+  Meteor.publish("room2", function(roomId) {
+    console.log("room2", roomId);
+    var res = Data.rooms.find({_id: roomId});
+    return res;
   });
 
-  Meteor.publish("scTracks", function(trackIds) {
-    return Data.scTracks.find({trackId: {$in: trackIds}});
+  Meteor.publish("tracks", function(roomId) {
+    console.log(roomId);
+    var room = Data.rooms.findOne(roomId);
+    if (room) {
+      var roomTracks = Data["room-track"].find({roomId: roomId});
+      console.log('pub room-tracks ', roomTracks.count());
+      var trackIds = roomTracks.map(function(roomTrack) {
+        return roomTrack.trackId;
+      });
+      console.log('pub tracks ' + JSON.stringify(trackIds));
+      return Data.tracks.find({trackId: {$in: trackIds}});
+    } else {
+      return [];
+    }
+  });
+} else {
+  Meteor.autosubscribe(function() {
+    console.log(Session.get("roomId"));
+    Meteor.subscribe("room1", Session.get("roomId"));
+    Meteor.subscribe("room2", Session.get("roomId"));
+    Meteor.subscribe("tracks", Session.get("roomId"));
   });
 }
 
