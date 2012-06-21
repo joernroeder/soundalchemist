@@ -52,7 +52,7 @@
 
 <template name="source-track">
   <p>
-    {{weight}} <a class="up" href="#">up</a> <a class="down" href="#">down</a>
+    {{weight}} <a class="change_weight" href="#">change</a>
     <a href="#" class="unmake-source">unstore as a source</a>
     <a href="{{url}}" target="_blank">{{url}}</a>
     {{trackId}}
@@ -66,7 +66,8 @@
     <a href="#" class="upvote">+1</a>
     <a href="#" class="downvote">-1</a>
     <a href="#" class="skip">skip</a>
-    {{> track}}
+    <a href="{{url}}" target="_blank">{{url}}</a>
+<!--    {{> track}} -->
   </p>
 </template>
 

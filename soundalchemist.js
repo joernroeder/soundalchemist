@@ -2,13 +2,24 @@
 // > db.tracks.ensureIndex({trackId: 1})
 // > db["room-track"].ensureIndex({roomId: 1, trackId: 1, weight: 1})
 
+/// NEW DESIGN:
+// only one recommendation?
+//   +1, pass, -1
+// show trail
+// ...xcxc
+
+
 /// TASKS:
-// - "turn the knob"
-// - "spectrum"
-// - "skip all"
-// - "return to lobby"
-// - "publish room"
-// - something about playing in other tab?
+// *** DATA FLICKER PROBLEM!!!
+// + skip should be VERY fast
+// + "spectrum"
+// + "skip all"
+// + "return to lobby"
+// + "publish room"
+// - somehow ensure not stopping something playing while it's playing... (how???)
+// - support no http://
+// - kick you out of a room that doens't exist? (why wouldn't they exist)
+// - autoturntheknob by looking at total weight of graph addition or something
 
 var Data = {
   tracks: new Meteor.Collection("tracks"),
@@ -52,6 +63,7 @@ Meteor.methods({
       var ts = Math.floor((new Date()).getTime() / 1000 / 60);
       Data["room-track"].insert(
         {roomId: roomId, trackId: trackId, weight: weight, when: ts});
+      console.log('room-track inserted');
     }
 
     Data.rooms.update(roomId, {$unset: {processing: 1}});
@@ -100,6 +112,7 @@ var loadTrack = function(trackId) {
 
   Future.wait(futures);
   Data.tracks.insert({trackId: trackId, influence: influence, trackInfo: trackInfo});
+  console.log('track inserted');
 };
 
 
@@ -202,7 +215,7 @@ if (Meteor.is_client) {
                                            trackId: parseInt(kv[0], 10)});
       });
 
-    return _.map(_.first(filteredSortedResultsArray, 5), function(kv) {
+    return _.map(_.first(filteredSortedResultsArray, 30), function(kv) {
       return {
         trackId: parseInt(kv[0], 10),
         spectrum: kv[1].spectrum,
@@ -213,15 +226,9 @@ if (Meteor.is_client) {
 
   Template['source-track'].events = {
     //xcxc redo all these
-    'click .up': function() {
-      var incFields = {};
-      incFields["tracks." + this.trackId + ".weight"] = 1;
-      Data.rooms.update(Session.get("roomId"), {$inc: incFields});
-    },
-    'click .down': function() {
-      var incFields = {};
-      incFields["tracks." + this.trackId + ".weight"] = -1;
-      Data.rooms.update(Session.get("roomId"), {$inc: incFields});
+    'click .change_weight': function() {
+      Data["room-track"].update({roomId: Session.get("roomId"), trackId: this.trackId},
+                                {$set: {weight: prompt('weight')}});
     },
     'click .unmake-source': function() {
       Data["room-track"].remove({roomId: Session.get("roomId"),
@@ -271,18 +278,52 @@ if (Meteor.is_server) {
   });
 
   Meteor.publish("tracks", function(roomId) {
+    var self = this;
     console.log(roomId);
     var room = Data.rooms.findOne(roomId);
     if (room) {
-      var roomTracks = Data["room-track"].find({roomId: roomId});
-      console.log('pub room-tracks ', roomTracks.count());
-      var trackIds = roomTracks.map(function(roomTrack) {
-        return roomTrack.trackId;
+      var roomTracksCursor = Data["room-track"].find({roomId: roomId});
+
+      // do a reactive join
+
+      var subhandles = {};
+
+      var roomTracks = {};
+      var firstTimePolling = true;
+
+      console.log('about to observe');
+
+      var observe_handle = roomTracksCursor.observe({
+        added: function (obj) {
+          console.log('otid', obj.trackId);
+          var result = Data.tracks.findOne({trackId: obj.trackId});
+          console.log('result', result && result._id);
+          if (result) {
+            self.set('tracks', result._id, result);
+            self.flush();
+          } else {
+            console.log("weird, couldn't find track ", JSON.stringify(obj));
+          }
+        },
+        changed: function (obj, old_idx, old_obj) {
+          // xcxc nothing?
+        },
+        removed: function (old_obj, old_idx) {
+          self.unset('tracks', old_obj._id, _.keys(old_obj));
+          self.flush();
+        }
       });
-      console.log('pub tracks ' + JSON.stringify(trackIds));
-      return Data.tracks.find({trackId: {$in: trackIds}});
+
+      // observe only returns after the initial added callbacks have
+      // run.  mark subscription as completed.
+      self.complete();
+      self.flush();
+
+      // register stop callback (expects lambda w/ no args).
+      self.onStop(_.bind(observe_handle.stop, observe_handle));
+
     } else {
-      return [];
+      // don't publish anything
     }
   });
 } else {
