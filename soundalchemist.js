@@ -9,17 +9,24 @@
 // ...xcxc
 
 
-/// TASKS:
-// *** DATA FLICKER PROBLEM!!!
-// + skip should be VERY fast
-// + "spectrum"
-// + "skip all"
-// + "return to lobby"
-// + "publish room"
+/// TASKS:/
+// + "new room" doesn't work now because of memoization
+// + "store current place in playing"
+// + automatically go to next track!!! BUT FADE!!!
+//   - different between +1, skip, -1
+// + autoturntheknob by looking at total weight of graph addition or something (find good sample example with a really popular one?)
+// + show 3 upcoming tracks
+
+// - "return to lobby"
+// - "publish room"
+
+// [ask david!] why didn't replace-by-id work? i needed to memoize room
+// *** in the meanwhile store 'processing' in the session?
+// - skip should be VERY fast
+// - "spectrum"
 // - somehow ensure not stopping something playing while it's playing... (how???)
 // - support no http://
 // - kick you out of a room that doens't exist? (why wouldn't they exist)
-// - autoturntheknob by looking at total weight of graph addition or something
 
 var Data = {
   tracks: new Meteor.Collection("tracks"),
@@ -161,8 +168,16 @@ if (Meteor.is_client) {
     }
   };
 
+  var memoizedRooms = {};
   var getRoom = function() {
-    return Data.rooms.findOne(Session.get('roomId'));
+    var roomId = Session.get('roomId');
+    if (!memoizedRooms[roomId]) {
+      var room = Data.rooms.findOne(roomId);
+      if (room)
+        memoizedRooms[roomId] = room;
+    }
+
+    return memoizedRooms[roomId];
   };
 
   Template.processing.processing = function() {
@@ -179,15 +194,17 @@ if (Meteor.is_client) {
 
   Template.recommendations.list = function() {
     var room = getRoom();
-    console.log('xcxc4', room);
+    console.log(new Date().toString(), 'start recommendations', room);
     if (!room)
       return [];
 
     var results = {};
-    console.log('xcxc2');
-    Data["room-track"].find({roomId: Session.get('roomId')}).forEach(function(roomTrack) {
+    var roomTracks = Data["room-track"].find({roomId: Session.get('roomId')});
+
+    console.log(new Date().toString(), 'computed roomTracks');
+
+    roomTracks.forEach(function(roomTrack) {
       var track = Data.tracks.findOne({trackId: roomTrack.trackId});
-      console.log('xcxc', track);
       if (!track)
         return;
 
@@ -203,25 +220,40 @@ if (Meteor.is_client) {
       });
     });
 
+    console.log(new Date().toString(), 'about to do array manipulation');
+
     var resultsArray = _.map(results, function(value, key) {
       return [key, value];
     });
     var sortedResultsArray = _.sortBy(resultsArray, function(kv) {
       return kv[1].rank * -1 /*descending*/;
     });
-    var filteredSortedResultsArray = _.reject(
-      sortedResultsArray, function(kv) {
-        return Data["room-track"].findOne({roomId: Session.get("roomId"),
-                                           trackId: parseInt(kv[0], 10)});
-      });
 
-    return _.map(_.first(filteredSortedResultsArray, 30), function(kv) {
-      return {
-        trackId: parseInt(kv[0], 10),
-        spectrum: kv[1].spectrum,
-        rank: kv[1].rank
-      };
+    console.log(new Date().toString(), 'about to filter');
+
+    // xcxc fetch earlier instead of rewinding here
+    roomTracks.rewind();
+    var fetchedRoomTracks = roomTracks.fetch();
+    var firstUnheardTrack = _.find(sortedResultsArray, function(kv) {
+      var matchTrackId = parseInt(kv[0], 10);
+      return !_.find(fetchedRoomTracks, function(roomTrack) {
+        return roomTrack.roomId === Session.get("roomId") &&
+          roomTrack.trackId === matchTrackId;
+      });
     });
+
+    console.log(new Date().toString(), 'done recommendations', room);
+
+    if (!firstUnheardTrack)
+      return [];
+    // xcxc refactor so that we don't need an array
+    return [{
+      trackId: parseInt(firstUnheardTrack[0], 10),
+      spectrum: firstUnheardTrack[1].spectrum,
+      rank: firstUnheardTrack[1].rank
+    }];
+
+    return res;
   };
 
   Template['source-track'].events = {
@@ -262,7 +294,10 @@ if (Meteor.is_client) {
   };
 
   Template.track.playerId = function() {
-    return 'player-' + escape(this.url);
+//    debugger;
+    console.log('playerId called', this.trackId, Data.tracks.findOne({trackId: this.trackId}));
+//    console.log('xcxc playerid', this);
+    return 'player-' + this.trackId;
   };
 }
 
@@ -329,9 +364,9 @@ if (Meteor.is_server) {
 } else {
   Meteor.autosubscribe(function() {
     console.log(Session.get("roomId"));
-    Meteor.subscribe("room1", Session.get("roomId"));
     Meteor.subscribe("room2", Session.get("roomId"));
     Meteor.subscribe("tracks", Session.get("roomId"));
+    Meteor.subscribe("room1", Session.get("roomId"));
   });
 }
 

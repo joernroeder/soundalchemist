@@ -51,7 +51,7 @@
 </template>
 
 <template name="source-track">
-  <p>
+  <p id="source-track-{{trackId}}">
     {{weight}} <a class="change_weight" href="#">change</a>
     <a href="#" class="unmake-source">unstore as a source</a>
     <a href="{{url}}" target="_blank">{{url}}</a>
@@ -66,12 +66,18 @@
     <a href="#" class="upvote">+1</a>
     <a href="#" class="downvote">-1</a>
     <a href="#" class="skip">skip</a>
-    <a href="{{url}}" target="_blank">{{url}}</a>
+    {{> outer_track}}
   </p>
 </template>
 
-<template name="track">
+<template name="outer_track">
+  {{> track}}
+</template>
 
-<iframe id="{{playerId}}" frameborder="no" height="166" scrolling="no" src="http://w.soundcloud.com/player/?url={{escapedUrl}}&auto_play=false&show_artwork=true&color=d31502" width="100%"></iframe>
+<template name="track">
+  <iframe id="{{playerId}}" frameborder="no" height="166" scrolling="no"
+          src="http://w.soundcloud.com/player/?url={{escapedUrl}}&auto_play=false&show_artwork=true&color=d31502"
+          width="100%">
+  </iframe>
 </template>
 
