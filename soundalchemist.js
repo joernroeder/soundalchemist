@@ -2,26 +2,19 @@
 // > db.tracks.ensureIndex({trackId: 1})
 // > db["room-track"].ensureIndex({roomId: 1, trackId: 1, weight: 1})
 
-/// NEW DESIGN:
-// only one recommendation?
-//   +1, pass, -1
-// show trail
-// ...xcxc
-
-
 /// TASKS:/
-// + "new room" doesn't work now because of memoization
+// + autoturntheknob by looking at total weight of graph addition or something (find good sample example with a really popular one?)
+// + +1 or -1'ing doesnt immediately repsond if some are waiting
+
 // + "store current place in playing"
 // + automatically go to next track!!! BUT FADE!!!
 //   - different between +1, skip, -1
-// + autoturntheknob by looking at total weight of graph addition or something (find good sample example with a really popular one?)
-// + show 3 upcoming tracks
 
+// - make "+1" even faster!
 // - "return to lobby"
 // - "publish room"
 
 // [ask david!] why didn't replace-by-id work? i needed to memoize room
-// *** in the meanwhile store 'processing' in the session?
 // - skip should be VERY fast
 // - "spectrum"
 // - somehow ensure not stopping something playing while it's playing... (how???)
@@ -37,7 +30,7 @@ var Data = {
 Meteor.methods({
   add: function(roomId, url, weight) {
     if (this.is_simulation) {
-      Data.rooms.update(roomId, {$set: {processing: true}});
+      Session.set('processing', true);
       return;
     };
 
@@ -52,7 +45,7 @@ Meteor.methods({
 
   addById: function(roomId, trackId, weight) {
     if (this.is_simulation) {
-      Data.rooms.update(roomId, {$set: {processing: true}});
+      Session.set('processing', true);
       return;
     };
 
@@ -73,12 +66,23 @@ Meteor.methods({
       console.log('room-track inserted');
     }
 
-    Data.rooms.update(roomId, {$unset: {processing: 1}});
     console.log("done adding");
+  },
+
+  loadTrack: function(trackId) {
+    if (!this.is_simulation) {
+      console.log('loading track', trackId);
+      this.unblock();
+      if (!Data.tracks.findOne({trackId: trackId})) {
+        loadTrack(trackId);
+      }
+      console.log('done loading track', trackId);
+    }
   }
 });
 
 var loadTrack = function(trackId) {
+  // xcxc mark it as loading-in-progress immediately.
   var trackInfo = Meteor.http.get(
     "http://api.soundcloud.com/tracks/" + trackId +
       ".json?client_id=17a48e602c9a59c5a713b456b60fea68").data;
@@ -157,7 +161,9 @@ if (Meteor.is_client) {
   };
 
   var add = function() {
-    Meteor.call("add", Session.get("roomId"), $('#url').val(), 1);
+    Meteor.call("add", Session.get("roomId"), $('#url').val(), 1, function() {
+      Session.set('processing', false);
+    });
     $('#url').val('');
   };
   Template.sources.events = {
@@ -181,8 +187,7 @@ if (Meteor.is_client) {
   };
 
   Template.processing.processing = function() {
-    var room = getRoom();
-    return room && room.processing;
+    return Session.get('processing');
   };
 
   Template.sources.list = function() {
@@ -234,26 +239,30 @@ if (Meteor.is_client) {
     // xcxc fetch earlier instead of rewinding here
     roomTracks.rewind();
     var fetchedRoomTracks = roomTracks.fetch();
-    var firstUnheardTrack = _.find(sortedResultsArray, function(kv) {
+
+    var results = [];
+    _.find(sortedResultsArray, function(kv) {
       var matchTrackId = parseInt(kv[0], 10);
-      return !_.find(fetchedRoomTracks, function(roomTrack) {
+      if (!_.find(fetchedRoomTracks, function(roomTrack) {
         return roomTrack.roomId === Session.get("roomId") &&
           roomTrack.trackId === matchTrackId;
-      });
+      })) {
+        results.push(kv);
+        if (results.length === 3)
+          return true;
+      };
+      return false;
     });
 
-    console.log(new Date().toString(), 'done recommendations', room);
-
-    if (!firstUnheardTrack)
-      return [];
-    // xcxc refactor so that we don't need an array
-    return [{
-      trackId: parseInt(firstUnheardTrack[0], 10),
-      spectrum: firstUnheardTrack[1].spectrum,
-      rank: firstUnheardTrack[1].rank
-    }];
-
-    return res;
+    return _.map(results, function(kv) {
+      var trackId = parseInt(kv[0], 10);
+      Meteor.call('loadTrack', trackId, function() { Session.set('loaded-' + trackId, true); });
+      return {
+        trackId: trackId,
+        spectrum: kv[1].spectrum,
+        rank: kv[1].rank
+      };
+    });
   };
 
   Template['source-track'].events = {
@@ -269,19 +278,29 @@ if (Meteor.is_client) {
   };
 
   Template['recommendation-track'].events = {
-    'click .upvote': function() {
-      Meteor.call('addById', Session.get("roomId"), this.trackId, 1);
-    },
-    'click .downvote': function() {
-      Meteor.call('addById', Session.get("roomId"), this.trackId, -1);
-    },
     'click .skip': function() {
-      Meteor.call('addById', Session.get("roomId"), this.trackId, 0);
+      Meteor.call('addById', Session.get("roomId"), this.trackId, 0,
+                  function() { Session.set('processing', false); });
     }
   };
 
   Template['recommendation-track'].spectrum = function() {
     return JSON.stringify(this.spectrum);
+  };
+
+  Template.voting.events = {
+    'click .upvote': function() {
+      Meteor.call('addById', Session.get("roomId"), this.trackId, 1,
+                  function() { Session.set('processing', false); });
+    },
+    'click .downvote': function() {
+      Meteor.call('addById', Session.get("roomId"), this.trackId, -1,
+                  function() { Session.set('processing', false); });
+    }
+  };
+
+  Template.voting.loaded = function() {
+    return Session.get('loaded-' + this.trackId);
   };
 
   Template['source-track'].url = function() {

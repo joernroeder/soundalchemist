@@ -19,6 +19,19 @@
 <!-- xcxc get rid of a href="#" -->
 
 <template name="lobby">
+  <p>
+  Welcome to soundalchemist v0.001 or something! Anyone want to help me design this? avital@thewe.net
+  </p>
+
+  <p>
+    So,! This is a musical journey. Create a new room and put some amazing soundcloud track (dj sets work great) with which to start. You'll see three recommendations. You can +1 or -1 each of them to change the subsequent recommendations. NOTE! +1/-1 don't exactly mean "like/dislike"; rather they mean something like "I'd like the music to shift more towards things like this" or the opposite. It's like reaching a fork and turning left or right; or neither to continue on a similar path.
+  </p>
+
+  <p>
+    There are lots of bugs and stuff, like the music stops whenever you +1 etc... all of those will be fixed but I've already found amazing music this way so I suspect others can as well.
+  </p>
+  
+
   <a href="#" id="newroom">new room</a>
 </template>
 
@@ -63,11 +76,17 @@
   <p>
     {{rank}}
     {{spectrum}}
-    <a href="#" class="upvote">+1</a>
-    <a href="#" class="downvote">-1</a>
+    {{> voting}}
     <a href="#" class="skip">skip</a>
     {{> outer_track}}
   </p>
+</template>
+
+<template name="voting">
+  {{#if loaded}}
+  <a href="#" class="upvote">+1</a>
+  <a href="#" class="downvote">-1</a>
+  {{/if}}
 </template>
 
 <template name="outer_track">
