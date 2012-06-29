@@ -163,7 +163,7 @@ if (Meteor.is_client) {
   };
 
   Template.recentActivity.list = function() {
-    return Data["room-track"].find({}, {sort: {when: -1}});
+    return Data["room-track"].find({weight: 1}, {sort: {when: -1}});
   };
 
   Template.room.events = {
@@ -215,7 +215,7 @@ if (Meteor.is_client) {
 
   Template.sources.list = function() {
     var room = getRoom();
-    return Data["room-track"].find({roomId: Session.get('roomId')},
+    return Data["room-track"].find({url: {$ne: null}, roomId: Session.get('roomId')},
                                    {sort: {when: 1}});
   };
 
