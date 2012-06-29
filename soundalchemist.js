@@ -59,10 +59,12 @@ Meteor.methods({
         loadTrack(trackId);
       }
 
-      // minutes since epoch
-      var ts = Math.floor((new Date()).getTime() / 1000 / 60);
+      // milliseconds since epoch
+      var ts = (new Date()).getTime();
       Data["room-track"].insert(
-        {roomId: roomId, trackId: trackId, weight: weight, when: ts});
+        {url: Data.tracks.findOne({trackId: trackId}).trackInfo.permalink_url,
+         roomId: roomId, trackId: trackId, weight: weight, when: ts,
+         who: this.userId(), whoName: Meteor.users.findOne(this.userId()).name});
       console.log('room-track inserted');
     }
 
@@ -140,7 +142,7 @@ if (Meteor.is_client) {
       Session.set("roomId", roomId);
     },
     newRoom: function() {
-      this.navigate(Data.rooms.insert({_: 0}));
+      this.navigate(Data.rooms.insert({_: 0, owner: Meteor.user()._id}), true);
     }
   });
 
@@ -160,8 +162,29 @@ if (Meteor.is_client) {
     }
   };
 
+  Template.recentActivity.list = function() {
+    return Data["room-track"].find({}, {sort: {when: -1}});
+  };
+
+  Template.room.events = {
+    'click #back-to-lobby': function() {
+      Router.navigate('', true);
+    },
+    'click #newroom': function() {
+      Router.newRoom();
+    }
+  };
+
   var add = function() {
-    Meteor.call("add", Session.get("roomId"), $('#url').val(), 1, function() {
+    var url = $('#url').val();
+
+    if (!url)
+      return;
+
+    if (url.indexOf('http://') === -1)
+      url = 'http://' + url;
+
+    Meteor.call("add", Session.get("roomId"), url, 1, function() {
       Session.set('processing', false);
     });
     $('#url').val('');
@@ -192,8 +215,7 @@ if (Meteor.is_client) {
 
   Template.sources.list = function() {
     var room = getRoom();
-    return Data["room-track"].find({roomId: Session.get('roomId'),
-                                    weight: {$ne: 0}},
+    return Data["room-track"].find({roomId: Session.get('roomId')},
                                    {sort: {when: 1}});
   };
 
@@ -265,6 +287,15 @@ if (Meteor.is_client) {
     });
   };
 
+  Template['source-track'].weightDescriptor = function() {
+    if (this.weight === 1)
+      return "leaned towards ";
+    else if (this.weight === -1)
+      return "leaned away from ";
+    else
+      return "passed by ";
+  };
+
   Template['source-track'].events = {
     //xcxc redo all these
     'click .change_weight': function() {
@@ -302,12 +333,12 @@ if (Meteor.is_client) {
   Template.voting.loaded = function() {
     return Session.get('loaded-' + this.trackId);
   };
-
+/*
   Template['source-track'].url = function() {
     var track = Data.tracks.findOne({trackId: this.trackId});
     return track && track.trackInfo && track.trackInfo.permalink_url;
   };
-
+*/
   Template.track.escapedUrl = function() {
     return escape('http://api.soundcloud.com/tracks/' + this.trackId);
   };
@@ -321,8 +352,12 @@ if (Meteor.is_client) {
 }
 
 if (Meteor.is_server) {
+  Meteor.publish("lobby", function() {
+    return Data["room-track"].find({weight: 1}, {sort: {when: -1}, limit: 12});
+  });
+
   Meteor.publish("room1", function(roomId) {
-    return Data["room-track"].find({roomId: roomId}, {$sort: {when: 1}});
+    return Data["room-track"].find({roomId: roomId}, {sort: {when: 1}});
   });
 
   Meteor.publish("room2", function(roomId) {
@@ -381,6 +416,8 @@ if (Meteor.is_server) {
     }
   });
 } else {
+  Meteor.subscribe("lobby");
+
   Meteor.autosubscribe(function() {
     console.log(Session.get("roomId"));
     Meteor.subscribe("room2", Session.get("roomId"));

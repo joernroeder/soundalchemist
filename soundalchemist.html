@@ -9,6 +9,13 @@
 </body>
 
 <template name="main">
+  {{#if currentUser}}
+
+  {{> loginButtons}} <!-- xcxc <p></p> didn't work here either! -->
+  <br>
+  <p></p>
+  {{/if}}
+
   {{#if isLobby}}
   {{> lobby}}
   {{else}}
@@ -16,26 +23,39 @@
   {{/if}}
 </template>
 
-<!-- xcxc get rid of a href="#" -->
-
 <template name="lobby">
   <p>
-  Welcome to soundalchemist v0.001 or something! Anyone want to help me design this? avital@thewe.net; oh also https://github.com/avital/soundalchemist
+  Welcome to soundalchemist v0.002 or something! Anyone want to help me design this? avital@thewe.net; oh also <a href="https://github.com/avital/soundalchemist">on github</a>
   </p>
 
-  <p>
-    So,! This is a musical journey. Create a new room and put some amazing soundcloud track (dj sets work great) with which to start. You'll see three recommendations. You can +1 or -1 (wait for these links to appear!) each of them to change the subsequent recommendations. NOTE! +1/-1 don't exactly mean "like/dislike"; rather they mean something like "I'd like the music to shift more towards things like this" or the opposite. It's like reaching a fork and turning left or right; or neither to continue on a similar path.
-  </p>
+  <h2>
+    A MUSICAL JOURNEY IN INFINITE-DIMENSIONAL SPACE
+  </h2>
 
-  <p>
-    There are lots of bugs and stuff, like the music stops whenever you +1 etc... or that until all the +1/-1 buttons appear no +1/-1 action takes effect... all of those will be fixed but I've already found amazing music this way so I suspect others can as well.
-  </p>
-  
 
-  <a href="#" id="newroom">new room</a>
+  {{#if currentUser}}
+  <a id="newroom">new room</a>
+  {{else}}
+  {{> loginButtons}} to start a new room
+  {{/if}}
+
+  {{> recentActivity}}
+</template>
+
+<template name="recentActivity">
+  {{#each list}}
+  {{> raw-source-track}}
+  {{/each}}
 </template>
 
 <template name="room">
+  <a id="back-to-lobby">back to lobby</a>
+  {{#if currentUser}}
+  ~~~
+  <a id="newroom">new room</a>
+  <hr />
+
+  {{/if}}
   {{> sources}}
   <hr />
   {{> recommendations}}
@@ -51,13 +71,22 @@
   {{> source-track}}
   {{/each}}
 
+  {{#if currentUser}}
   <input id="url"
          placeholder="e.g. http://soundcloud.com/russliquid/russ-liquid-soundcloud-mix"
          />
-  <input id="add" type="button" value="add" />
+  <input id="add" type="button" value="lean towards" />
+  {{else}}
+
+  <br> <!-- xcxc why couldn't i put <p> here?! i got a liverange error -->
+  {{> loginButtons}} to start a new room, fork this one or skip to more music like this
+  {{/if}}
+
 </template>
 
 <template name="recommendations">
+  <p>...AND NOW WE ARE HERE.</p>
+
   {{#each list}}
   {{> recommendation-track}}
   {{/each}}
@@ -65,27 +94,50 @@
 
 <template name="source-track">
   <p id="source-track-{{trackId}}">
-    {{weight}} <a class="change_weight" href="#">change</a>
-    <a href="#" class="unmake-source">unstore as a source</a>
+    {{whoName}}
+    {{weightDescriptor}}
+<!--    <a class="change_weight">change</a> -->
     <a href="{{url}}" target="_blank">{{url}}</a>
-    {{trackId}}
+    {{#if currentUser}}
+    ~~~ <a class="unmake-source">forget</a>
+    {{/if}}
+<!--    {{trackId}} -->
   </p>
+</template>
+
+<template name="raw-source-track">
+  {{#if url}}
+  <p id="source-track-{{trackId}}">
+    {{whoName}}
+    leaned towards
+<!--    <a class="change_weight">change</a> -->
+    <a href="{{url}}" target="_blank">{{url}}</a>
+    in room
+    <a href="/{{roomId}}" target="_blank">{{roomId}}</a>
+<!--    {{trackId}} -->
+  </p>
+  {{/if}}
 </template>
 
 <template name="recommendation-track">
   <p>
+<!--
     {{rank}}
     {{spectrum}}
+-->
+    {{#if currentUser}}
     {{> voting}}
-    <a href="#" class="skip">skip</a>
+    ~~~
+    <a class="skip">skip</a>
+    {{/if}}
     {{> outer_track}}
   </p>
 </template>
 
 <template name="voting">
   {{#if loaded}}
-  <a href="#" class="upvote">+1</a>
-  <a href="#" class="downvote">-1</a>
+  <a class="upvote">lean towards this</a> ~~~
+  <a class="downvote">lean away from this</a>
   {{/if}}
 </template>
 
