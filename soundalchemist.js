@@ -213,6 +213,14 @@ if (Meteor.is_client) {
     return Session.get('processing');
   };
 
+  Template.room.roomName = function() {
+    return greg(Session.get('roomId'));
+  };
+
+  Template["raw-source-track"].roomName = function() {
+    return greg(this.roomId);
+  };
+
   Template.sources.list = function() {
     var room = getRoom();
     return Data["room-track"].find({url: {$ne: null}, roomId: Session.get('roomId')},
