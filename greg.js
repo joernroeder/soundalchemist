@@ -56,15 +56,15 @@ exports.nouns = [
     "pikes", "salmons", "trouts", "frogs", "newts", "toads", "crabs", "lobsters",
     "clams", "cockles", "mussles", "oysters", "snails", "cattle", "dogs", "donkeys",
     "goats", "horses", "pigs", "sheep", "ferrets", "gerbils", "guinea pigs", "parrots",
-    "greg"
+    "gregs"
 ];
 
-// English verbs, past tense
+// English verbs, present tense
 exports.verbs = [
-    "sang", "played", "knitted", "floundered", "danced", "played", "listened", "ran",
-    "talked", "cuddled", "sat", "kissed", "hugged", "whimpered", "hid", "fought",
-    "whispered", "cried", "snuggled", "walked", "drove", "loitered", "whimpered", "felt",
-    "jumped", "hopped", "went", "married", "engaged", 
+    "sing", "play", "knit", "flounder", "dance", "play", "listen", "run",
+    "talk", "cuddle", "sit", "kiss", "hug", "whimper", "hide", "fight",
+    "whisper", "cry", "snuggle", "walk", "drive", "loiter", "whimper", "feel",
+    "jump", "hop", "go", "marry", "engage"
 ];
 
 // English adverbs
