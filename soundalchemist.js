@@ -1,3 +1,9 @@
+//
+// get rid of "skip" in favor of "see next"
+// get rid of "forget" in favor of "backtrack"
+// people should have authority over their rooms
+//
+
 // indexes:
 // > db.tracks.ensureIndex({trackId: 1})
 // > db["room-track"].ensureIndex({roomId: 1, trackId: 1, weight: 1})
