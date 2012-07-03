@@ -18,7 +18,6 @@
 // - skip should be VERY fast
 // - "spectrum"
 // - somehow ensure not stopping something playing while it's playing... (how???)
-// - support no http://
 // - kick you out of a room that doens't exist? (why wouldn't they exist)
 
 var Data = {
@@ -180,6 +179,9 @@ if (Meteor.is_client) {
 
     if (!url)
       return;
+
+    if (url.indexOf('https://') === 0)
+      url = url.substring('https://'.length);
 
     if (url.indexOf('http://') === -1)
       url = 'http://' + url;
@@ -361,7 +363,7 @@ if (Meteor.is_client) {
 
 if (Meteor.is_server) {
   Meteor.publish("lobby", function() {
-    return Data["room-track"].find({weight: 1}, {sort: {when: -1}, limit: 12});
+    return Data["room-track"].find({weight: 1}, {sort: {when: -1}, limit: 18});
   });
 
   Meteor.publish("room1", function(roomId) {
