@@ -42,9 +42,3 @@ computeRecommendations = function () {
 computeRecommendations();
 
 /// ^^^ REPLACE ALL ABOVE WITH REALITY LATER ^^^
-
-if (Meteor.is_client) {
-  Template.recommendations.list = function () {
-    return state.recommendations;
-  };
-}
