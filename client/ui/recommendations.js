@@ -34,23 +34,3 @@ if (Meteor.is_client) {
     }
   };
 }
-
-if (typeof SoundAlchemist == "undefined") SoundAlchemist = {};
-SoundAlchemist.onStartup = function() {
-  $('.recommendations').isotope({
-    animationOptions: {
-      duration: 750,
-      easing: 'linear',
-      queue: false
-    },
-    masonry: {
-      columnWidth: 110,
-      gutterWidth: 10
-    },
-    animationEngine: 'jquery' // TODO(gregp): use css3 transitions
-  });
-};
-
-if (Meteor.is_client) {
-  Meteor.startup(SoundAlchemist.onStartup);
-}

@@ -9,11 +9,19 @@
 </body>
 
 <template name="main">
-  <div class="topbar">{{> loginButtons}}</div>
-  {{> trail}}
-  {{> player}}
-  {{> controls}}
-  {{> recommendations}}
+  {{#if isHome}}
+    Welcome home. Visit <a href="/at/somewhere">/at/somewhere</a>.
+  {{else}}
+    {{#if isPoint}}
+      <div class="topbar">{{> loginButtons}}</div>
+      {{> trail}}
+      {{> player}}
+      {{> controls}}
+      {{> recommendations}}
+    {{else}}
+      FOUR-OH-FOUR
+    {{/if}}
+  {{/if}}
 </template>
 
 <template name="trail">
