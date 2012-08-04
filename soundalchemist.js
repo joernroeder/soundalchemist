@@ -1,6 +1,6 @@
 state = {
   trail: [],
-  current: 'soundcloud.com/max-cooper/max-cooper-panacea-glade',
+  current: 'http://soundcloud.com/max-cooper/max-cooper-panacea-glade',
   recommendations: []
 };
 
@@ -14,3 +14,8 @@ computeRecommendations = function () {
      rank: 60}
   ];
 };
+
+computeRecommendations();
+
+/// ^^^ REPLACE ALL ABOVE WITH REALITY LATER ^^^
+
