@@ -1,8 +1,10 @@
 <template name="recommendations">
   {{#each list}}
-  <div class="recommendation"
-       style="width: {{width}}px; height: {{height}}px">
-    {{url}}
-  </div>
+    <a href="{{url}}">
+      <div class="recommendation"
+           style="width: {{width}}px; height: {{height}}px">
+        {{url}}
+      </div>
+    </a>
   {{/each}}
 </template>
