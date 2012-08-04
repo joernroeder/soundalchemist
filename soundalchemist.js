@@ -1,6 +1,9 @@
 state = {
   trail: [],
-  current: 'http://soundcloud.com/max-cooper/max-cooper-panacea-glade',
+  current: {
+    url: 'http://soundcloud.com/max-cooper/max-cooper-panacea-glade',
+    trackId: 41120385
+  },
   recommendations: []
 };
 
@@ -42,3 +45,9 @@ computeRecommendations = function () {
 computeRecommendations();
 
 /// ^^^ REPLACE ALL ABOVE WITH REALITY LATER ^^^
+
+if (Meteor.is_client) {
+  Template.player.escapedUrl = function () {
+    return escape('http://api.soundcloud.com/tracks/' + state.current.trackId);
+  };
+}
