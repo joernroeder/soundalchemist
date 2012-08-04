@@ -35,7 +35,8 @@ SoundAlchemist.onStartup = function() {
       duration: 750,
       easing: 'linear',
       queue: false
-    }
+    },
+    animationEngine: 'jquery' // TODO(gregp): use css3 transitions
   });
 };
 
