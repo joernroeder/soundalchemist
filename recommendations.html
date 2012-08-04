@@ -7,11 +7,12 @@
 </template>
 
 <template name="recommendation">
-  <a href="{{url}}">
-    <img class="recommendation"
-         src="{{imageUrl}}"
-         style="width: {{size.width}}px; height: {{size.height}}px"
-         title="{{url}}" />
-    </img>
-  </a>
+  <div class="recommendation"
+       style="width: {{size.w}}px; height: {{size.h}}px">
+    <a href="{{url}}">
+      <img src="{{imageUrl}}"
+           title="{{url}}" />
+      </img>
+    </a>
+  </div>
 </template>
