@@ -7,38 +7,3 @@
 <body>
   {{> main}}
 </body>
-
-<template name="main">
-  {{#if isHome}}
-    Welcome home. Visit <a href="/at/somewhere">/at/somewhere</a>.
-  {{else}}
-    {{#if isPoint}}
-      <div class="topbar">{{> loginButtons}}</div>
-      {{> trail}}
-      {{> player}}
-      {{> controls}}
-      {{> recommendations}}
-    {{else}}
-      FOUR-OH-FOUR
-    {{/if}}
-  {{/if}}
-</template>
-
-<template name="trail">
-  {{#each list}}
-  <div class="trail-item">{{> soundcloudImg}}</div>
-  <div class="trail-vote">{{vote}}</div>
-  {{/each}}
-</template>
-
-<template name="player">
-  <iframe frameborder="no" height="166" scrolling="no"
-          src="http://w.soundcloud.com/player/?url={{escapedUrl}}&auto_play=false&show_artwork=true&color=d31502"
-          width="100%">
-  </iframe>
-</template>
-
-<template name="controls">
-  <a href="onward">onward</a>
-  <a href="outward">outward</a>
-</template>

@@ -29,7 +29,7 @@ if (Meteor.is_server) {
     var futures = _.map(favoriters, function(favoriter) {
       //    console.log('parsing ' + favoriter.username);
       var favoriterId = favoriter.id;
-      var future = new Future;
+      var future = new Future();
 
       Meteor.http.get(
         "http://api.soundcloud.com/users/" + favoriterId +
@@ -107,7 +107,7 @@ if (Meteor.is_client) {
 
     var pending = 0;
     _.each(point.trail, function (trailPoint) {
-      pending++
+      pending++;
       Meteor.subscribe("trackRec", trailPoint.soundcloud.id, function () {
         pending--;
         if (!pending) {
@@ -118,32 +118,3 @@ if (Meteor.is_client) {
   });
 }
 
-/// ^^^ REPLACE ALL ABOVE WITH REALITY LATER ^^^
-
-if (Meteor.is_client) {
-  Template.trail.list = function () {
-    var point = Points.findOne(Session.get("pointId"));
-    if (!point)
-      return [];
-    else
-      return point.trail;
-  };
-
-  Template.player.escapedUrl = function () {
-    Meteor.call("prepareTrack", this.url); // xcxc should enable the buttons when done
-    if (Session.get('player-trackId'))
-      return escape('http://api.soundcloud.com/tracks/' + Session.get('player-trackId'));
-    else
-      return ''; // xcxc ???
-  };
-
-  // Super ghetto routing
-  Template.main.isHome = function() {
-    return Session.get('page') == SoundAlchemist.view.HOME;
-  };
-  Template.main.isPoint = function() {
-    return Session.get('page') == SoundAlchemist.view.POINT;
-  };
-
-  Backbone.history.start({pushState: true});
-}
