@@ -1,5 +1,6 @@
 if (Meteor.is_client) {
   Template.recommendations.list = function () {
+    Session.get("redraw-recommendations"); // to estabilsh a dependency
     return state.recommendations;
   };
 
