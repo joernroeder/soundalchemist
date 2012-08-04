@@ -1,68 +1,6 @@
 Points = new Meteor.Collection("points");
 TrackRecs = new Meteor.Collection("trackRecs");
 
-if (Meteor.is_server) {
-  Meteor.publish("point", function (pointId) {
-    return Points.find({pointId: pointId});
-  });
-
-  Meteor.publish("trackRec", function (trackId) {
-    return TrackRecs.find({trackId: trackId});
-  });
-
-  var loadTrackRec = function(trackId) {
-    // xcxc mark it as loading-in-progress immediately.
-    var trackInfo = Meteor.http.get(
-      "http://api.soundcloud.com/tracks/" + trackId +
-        ".json?client_id=17a48e602c9a59c5a713b456b60fea68").data;
-
-    // xcxc offsets
-    var favoriters = Meteor.http.get(
-      "http://api.soundcloud.com/tracks/" + trackId +
-        "/favoriters.json" +
-        "?limit=200" +
-        "&client_id=17a48e602c9a59c5a713b456b60fea68").data;
-
-    // xcxc better term?
-    var influence = {};
-
-    var futures = _.map(favoriters, function(favoriter) {
-      //    console.log('parsing ' + favoriter.username);
-      var favoriterId = favoriter.id;
-      var future = new Future();
-
-      Meteor.http.get(
-        "http://api.soundcloud.com/users/" + favoriterId +
-          "/favorites.json" +
-          "?limit=200" +
-          "&duration[from]=1200000" +
-          "&client_id=17a48e602c9a59c5a713b456b60fea68", function(error, result) {
-            var favoriteTracks = result.data;
-            _.each(favoriteTracks, function(track) {
-              if (!influence[track.id])
-                influence[track.id] = 0;
-              influence[track.id]++;
-            });
-
-            future.resolver()();
-          });
-
-      return future;
-    });
-
-    Future.wait(futures);
-    TrackRecs.insert({trackId: trackId, influence: influence});
-    console.log('track inserted');
-  };
-
-  Meteor.methods({
-    loadTrackRec: function (trackId) {
-      if (!TrackRecs.findOne({trackId: trackId}))
-        loadTrackRec(trackId);
-    }
-  });
-}
-
 if (Meteor.is_client) {
   state = {
     recommendations: []
@@ -77,7 +15,7 @@ if (Meteor.is_client) {
     _.each(point.trail, function (trailPoint) {
       var weight = trailPoint.weight;
       var trackRec = TrackRecs.findOne({trackId: trailPoint.soundcloud.id});
-      _.each(trackRec.influence, function(count, trackId) {
+      _.each(trackRec.relativity, function(count, trackId) {
         if (!results[trackId])
           results[trackId] = {rank: 0, url: trackRec.soundcloud.url};
         results[trackId].rank += count * weight;

@@ -2,6 +2,10 @@
     height: 30px;
 }
 
+#soundcloud-url {
+    width: 400px;
+}
+
 .recommendation {
   overflow: hidden;
   margin: 5px 0;

@@ -1,6 +1,7 @@
 <template name="main">
   {{#if isHome}}
-    Welcome home. Visit <a href="/at/somewhere">/at/somewhere</a>.
+    <input id="soundcloud-url" />
+    <button id="start-journey">Start journey</button>
   {{else}}
     {{#if isPoint}}
       <div class="topbar">{{> loginButtons}}</div>
