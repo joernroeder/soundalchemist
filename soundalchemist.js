@@ -9,6 +9,58 @@ if (Meteor.is_server) {
   Meteor.publish("trackRec", function (trackId) {
     return TrackRecs.find({trackId: trackId});
   });
+
+  var loadTrack = function(trackId) {
+    // xcxc mark it as loading-in-progress immediately.
+    var trackInfo = Meteor.http.get(
+      "http://api.soundcloud.com/tracks/" + trackId +
+        ".json?client_id=17a48e602c9a59c5a713b456b60fea68").data;
+
+    // xcxc offsets
+    var favoriters = Meteor.http.get(
+      "http://api.soundcloud.com/tracks/" + trackId +
+        "/favoriters.json" +
+        "?limit=200" +
+        "&client_id=17a48e602c9a59c5a713b456b60fea68").data;
+
+    // xcxc better term?
+    var influence = {};
+
+    var futures = _.map(favoriters, function(favoriter) {
+      //    console.log('parsing ' + favoriter.username);
+      var favoriterId = favoriter.id;
+      var future = new Future;
+
+      Meteor.http.get(
+        "http://api.soundcloud.com/users/" + favoriterId +
+          "/favorites.json" +
+          "?limit=200" +
+          "&duration[from]=1200000" +
+          "&client_id=17a48e602c9a59c5a713b456b60fea68", function(error, result) {
+            var favoriteTracks = result.data;
+            _.each(favoriteTracks, function(track) {
+              if (!influence[track.id])
+                influence[track.id] = 0;
+              influence[track.id]++;
+            });
+
+            future.resolver()();
+          });
+
+      return future;
+    });
+
+    Future.wait(futures);
+    TrackRecs.insert({trackId: trackId, influence: influence});
+    console.log('track inserted');
+  };
+
+  Meteor.methods({
+    loadTrack: function (trackId) {
+      if (!TrackRecs.findOne({trackId: trackId}))
+        loadTrack(trackId);
+    }
+  });
 }
 
 if (Meteor.is_client) {
