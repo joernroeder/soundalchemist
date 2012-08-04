@@ -11,3 +11,18 @@ if (Meteor.is_client) {
     return recs;
   };
 }
+
+if (typeof SoundAlchemist == "undefined") SoundAlchemist = {};
+SoundAlchemist.onStartup = function() {
+  $('.recommendations').isotope({
+    animationOptions: {
+      duration: 750,
+      easing: 'linear',
+      queue: false
+    }
+  });
+};
+
+if (Meteor.is_client) {
+  Meteor.startup(SoundAlchemist.onStartup);
+}
