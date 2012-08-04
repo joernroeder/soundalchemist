@@ -4,9 +4,21 @@
 
 .recommendation {
   overflow: hidden;
-  /*border: 1px solid black;
-  margin: 10px;*/
+  margin: 5px 0;
   position: relative;
+}
+
+.recommendation.s1 {
+  width: 100px;
+  height: 100px;
+}
+.recommendation.s2 {
+  width: 210px;
+  height: 210px;
+}
+.recommendation.s3 {
+  width: 320px;
+  height: 320px;
 }
 
 .recommendation img {
