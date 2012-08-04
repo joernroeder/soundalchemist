@@ -1,5 +1,12 @@
 state = {
-  trail: [],
+  trail: [
+    {url: 'http://soundcloud.com/ajukaja/jam-3-by-ajukaja-andrevski',
+     vote: 1
+    },
+    {url: 'http://soundcloud.com/therapistudio/therapist-a-study-in-departure',
+     vote: -1
+    }
+  ],
   current: {
     url: 'http://soundcloud.com/max-cooper/max-cooper-panacea-glade',
     trackId: 41120385
@@ -47,6 +54,8 @@ computeRecommendations();
 /// ^^^ REPLACE ALL ABOVE WITH REALITY LATER ^^^
 
 if (Meteor.is_client) {
+  Template.trail.list = state.trail;
+
   Template.player.escapedUrl = function () {
     return escape('http://api.soundcloud.com/tracks/' + state.current.trackId);
   };
