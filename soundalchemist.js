@@ -10,7 +10,7 @@ if (Meteor.is_server) {
     return TrackRecs.find({trackId: trackId});
   });
 
-  var loadTrack = function(trackId) {
+  var loadTrackRec = function(trackId) {
     // xcxc mark it as loading-in-progress immediately.
     var trackInfo = Meteor.http.get(
       "http://api.soundcloud.com/tracks/" + trackId +
@@ -56,9 +56,9 @@ if (Meteor.is_server) {
   };
 
   Meteor.methods({
-    loadTrack: function (trackId) {
+    loadTrackRec: function (trackId) {
       if (!TrackRecs.findOne({trackId: trackId}))
-        loadTrack(trackId);
+        loadTrackRec(trackId);
     }
   });
 }
