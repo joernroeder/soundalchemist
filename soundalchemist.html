@@ -12,6 +12,7 @@
   <div class="topbar">{{> loginButtons}}</div>
   {{> trail}}
   {{> player}}
+  {{> controls}}
   {{> recommendations}}
 </template>
 
@@ -27,4 +28,9 @@
           src="http://w.soundcloud.com/player/?url={{escapedUrl}}&auto_play=false&show_artwork=true&color=d31502"
           width="100%">
   </iframe>
+</template>
+
+<template name="controls">
+  <a href="onward">onward</a>
+  <a href="outward">outward</a>
 </template>
