@@ -6,8 +6,8 @@ if (Meteor.is_client) {
   Template.recommendation.size = function () {
     // This maps ranks in (-inf, 100] to size [1,3]
     var size = Math.ceil(Math.sqrt(Math.max(this.rank,0))/3.4);
-    var width = size * 100;
-    var height = size * 100;
+    var width = size;
+    var height = 100 + (size - 1) * 110;
     return {w: width, h: height};
   };
 
@@ -39,7 +39,7 @@ SoundAlchemist.onStartup = function() {
       queue: false
     },
     masonry: {
-      columnWidth: 100,
+      columnWidth: 110,
       gutterWidth: 10
     },
     animationEngine: 'jquery' // TODO(gregp): use css3 transitions
