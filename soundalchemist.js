@@ -7,10 +7,6 @@ state = {
      vote: -1
     }
   ],
-  current: {
-    url: 'http://soundcloud.com/max-cooper/max-cooper-panacea-glade',
-    trackId: 41120385
-  },
   recommendations: []
 };
 
@@ -57,6 +53,9 @@ if (Meteor.is_client) {
   Template.trail.list = state.trail;
 
   Template.player.escapedUrl = function () {
-    return escape('http://api.soundcloud.com/tracks/' + state.current.trackId);
+    if (Session.get('player-trackId'))
+      return escape('http://api.soundcloud.com/tracks/' + Session.get('player-trackId'));
+    else
+      return ''; // xcxc ???
   };
 }
