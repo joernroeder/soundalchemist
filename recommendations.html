@@ -1,12 +1,16 @@
 <template name="recommendations">
   <div class="recommendations">
     {{#each list}}
-      <a href="{{url}}">
-        <div class="recommendation"
-             style="width: {{width}}px; height: {{height}}px">
-          {{url}}
-        </div>
-      </a>
+      {{> recommendation}}
     {{/each}}
   </div>
+</template>
+
+<template name="recommendation">
+  <a href="{{url}}">
+    <div class="recommendation"
+         style="width: {{size.width}}px; height: {{size.height}}px">
+      <img src="{{imageUrl}}" />
+    </div>
+  </a>
 </template>
