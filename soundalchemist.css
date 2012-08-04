@@ -1,3 +1,8 @@
 .topbar {
     height: 30px;
 }
+
+.recommendation {
+    overflow: hidden;
+    border: 1px solid black;
+}

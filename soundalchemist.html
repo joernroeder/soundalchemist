@@ -25,6 +25,9 @@
 
 <template name="recommendations">
   {{#each list}}
-  <div class="recommendation">{{url}}</div>
+  <div class="recommendation"
+       style="width: 100px; height: 100px">
+    {{url}}
+  </div>
   {{/each}}
 </template>
