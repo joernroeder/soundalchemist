@@ -8,14 +8,17 @@
   position: relative;
 }
 
-.recommendation.w1 {
+.recommendation.s1 {
   width: 100px;
+  height: 100px;
 }
-.recommendation.w2 {
+.recommendation.s2 {
   width: 210px;
+  height: 210px;
 }
-.recommendation.w3 {
+.recommendation.s3 {
   width: 320px;
+  height: 320px;
 }
 
 .recommendation img {

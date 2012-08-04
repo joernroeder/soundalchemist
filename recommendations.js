@@ -5,10 +5,7 @@ if (Meteor.is_client) {
 
   Template.recommendation.size = function () {
     // This maps ranks in (-inf, 100] to size [1,3]
-    var size = Math.ceil(Math.max(this.rank,0)/33.4);
-    var width = size;
-    var height = 100 + (size - 1) * 110;
-    return {w: width, h: height};
+    return Math.ceil(Math.max(this.rank,0)/33.4);
   };
 
   Template.soundcloudImg.imageUrl = function () {
