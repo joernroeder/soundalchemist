@@ -9,7 +9,23 @@ if (Meteor.is_client) {
     return {width: size * 100, height: size * 100};
   };
 
-//  Template.recommendation
+  Template.recommendation.imageUrl = function () {
+    var self = this;
+    var imageUrl = Session.get('image-url-' + this.url);
+    if (imageUrl) {
+      return imageUrl;
+    } else {
+      Meteor.http.get(
+        "http://api.soundcloud.com/resolve.json?url="
+          + this.url
+          + "&client_id=17a48e602c9a59c5a713b456b60fea68",
+        function (error, result) {
+          Session.set('image-url-' + self.url, result.data.artwork_url);
+        });
+
+      return 'http://pierre.chachatelier.fr/programmation/images/mozodojo-original-image.jpg';
+    }
+  };
 }
 
 if (typeof SoundAlchemist == "undefined") SoundAlchemist = {};
