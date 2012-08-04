@@ -29,7 +29,6 @@ if (Meteor.is_client) {
 
   Template.soundcloudImg.events = {
     'click': function () {
-      debugger;
       Session.set('player-trackId', Session.get('trackId-' + this.url));
     }
   };
