@@ -4,13 +4,6 @@ state = {
   recommendations: []
 };
 
-computeRecommendations = function () {
-  state.recommendations = FAKE_RECOMMENDATIONS;
-};
-
-computeRecommendations();
-
-/// ^^^ REPLACE ALL ABOVE WITH REALITY LATER ^^^
 
 FAKE_RECOMMENDATIONS = [
   {url: 'http://soundcloud.com/ajukaja/jam-3-by-ajukaja-andrevski',
@@ -58,3 +51,12 @@ FAKE_RECOMMENDATIONS = [
   {url: "http://soundcloud.com/aeroplane/aeroplane-february-2012-mix",
     rank: 27}
 ];
+
+
+computeRecommendations = function () {
+  state.recommendations = FAKE_RECOMMENDATIONS;
+};
+
+computeRecommendations();
+
+/// ^^^ REPLACE ALL ABOVE WITH REALITY LATER ^^^
