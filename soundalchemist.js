@@ -60,3 +60,7 @@ computeRecommendations = function () {
 computeRecommendations();
 
 /// ^^^ REPLACE ALL ABOVE WITH REALITY LATER ^^^
+
+Template.recommendations.list = function () {
+  return state.recommendations;
+};

@@ -24,5 +24,7 @@
 </template>
 
 <template name="recommendations">
-  <div class="recommendations">xcxc</div>
+  {{#each list}}
+  <div class="recommendation">{{url}}</div>
+  {{/each}}
 </template>
