@@ -1,6 +1,16 @@
 Points = new Meteor.Collection("points");
 TrackRecs = new Meteor.Collection("trackRecs");
 
+if (Meteor.is_server) {
+  Meteor.publish("point", function (pointId) {
+    return Points.find({pointId: pointId});
+  });
+
+  Meteor.publish("trackRec", function (trackId) {
+    return TrackRecs.find({trackId: trackId});
+  });
+}
+
 if (Meteor.is_client) {
   state = {
     recommendations: []
@@ -33,6 +43,10 @@ if (Meteor.is_client) {
     });
     Session.set('redraw-recommendations', (Session.get('redraw-recommendations') || 0) + 1);
   };
+
+  Meteor.autosubscribe(function () {
+    Meteor.subscribe("point", Session.get("pointId"));
+  });
 
   Meteor.autosubscribe(function () {
     var point = Points.findOne(Session.get("pointId"));
