@@ -11,7 +11,7 @@ if (Meteor.is_client) {
     return {w: width, h: height};
   };
 
-  Template.recommendation.imageUrl = function () {
+  Template.soundcloudImg.imageUrl = function () {
     var self = this;
     var imageUrl = Session.get('image-url-' + this.url);
     if (imageUrl) {
