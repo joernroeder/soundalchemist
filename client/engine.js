@@ -47,7 +47,6 @@ var computeRecommendations = function(pointId) {
         i <= _SA.MAX_RECOMMENDATIONS && i < sortedResultsArray.length;
         i++) {
     var trackId = sortedResultsArray[i][0];
-    getTrackData(trackId); // head start
     results.push({
       trackId: trackId, // keys in intensity map
       intensity: intensity[trackId] * scaleFactor

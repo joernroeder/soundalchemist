@@ -61,9 +61,9 @@ Meteor.methods({
           "&client_id=17a48e602c9a59c5a713b456b60fea68").data;
       // console.log('DEBUG: Got response for favoriters of %s', trackId);
 
-
       var relativity = trackRec.relativity = {};
       var futures = _.map(favoriters, function(favoriter) {
+        console.log('*');
         var favoriterId = favoriter.id;
         var future = new Future();
         var finished = future.resolver();

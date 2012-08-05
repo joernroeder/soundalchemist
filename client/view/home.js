@@ -33,7 +33,11 @@ SoundAlchemist.view.home.maybeRegisterUrl = function(soundcloudUrl) {
 
   // Get a head start on the recommendations
   // console.log('DEBUG: getting track data from url ', soundcloudUrl);
-  getTrackDataFromUrl(soundcloudUrl, function(trackId) {
+  getTrackDataFromUrl(soundcloudUrl, function(error, trackId) {
+    if (error) {
+      Session.set('home:pending', false);
+      Session.set('home:pending', false);
+    }
     Session.set('home:trackId', trackId);
     Meteor.call("makeInitialPoint", trackId, function(error, pointId) {
       if (error) {throw error;}
@@ -104,6 +108,10 @@ Template.home.pending = function() {
 
 Template.home.notReady = function() {
   return !Session.get('home:ready');
+};
+
+Template.home.badUrl = function() {
+  return !Session.get('home:ready') && !Session.get('home:pending');
 };
 
 Template.home.events = {

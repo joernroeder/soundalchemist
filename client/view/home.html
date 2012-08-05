@@ -1,5 +1,6 @@
 <template name="home">
   <input id="soundcloud-url" value="{{defaultUrl}}" />
+  {{#if badUrl}}bad url{{/if}}
   <button id="start-journey" {{#if notReady}}disabled="disabled"{{/if}}>
     Start journey
   </button>

@@ -20,7 +20,6 @@ var _registerTrackData = function(result, opt_callback) {
 
   // console.log('DEBUG: inserting track data for ' + id, trackData);
   _SA.Tracks.insert(trackData);
-  // TODO(gregp): why does ^^ not work?
 
   Session.set('tracks:imageUrl+' + id,
     trackData.artwork_url ||
@@ -29,7 +28,7 @@ var _registerTrackData = function(result, opt_callback) {
   Session.set('tracks:url+' + id,
     trackData.permalink_url);
 
-  opt_callback && opt_callback(id);
+  opt_callback && opt_callback(null, id);
 };
 
 var _soundcloudApiUrl = function(meat) {
@@ -37,12 +36,12 @@ var _soundcloudApiUrl = function(meat) {
     "&client_id=17a48e602c9a59c5a713b456b60fea68";
 };
 
-var getTrackData = function(soundcloudId, opt_callback) {
+var getTrackDataById = function(soundcloudId, opt_callback) {
   Meteor.http.get(
     _soundcloudApiUrl("tracks/" + soundcloudId + ".json?"),
     function (error, result) {
       if (error) {
-        throw error;
+        opt_callback && opt_callback(error);
       } else {
         _registerTrackData(result, opt_callback);
       }
