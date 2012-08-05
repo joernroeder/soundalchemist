@@ -1,0 +1,11 @@
+<template name="main">
+  {{#if isHome}}
+    {{> home}}
+  {{else}}
+    {{#if isPoint}}
+      {{> point}}
+    {{else}}
+      FOUR-OH-FOUR
+    {{/if}}
+  {{/if}}
+</template>

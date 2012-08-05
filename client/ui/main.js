@@ -19,17 +19,4 @@ var getTrackData = function(url, callback) {
   });
 };
 
-Template.main.events = {
-  'click #start-journey': function () {
-    var url = document.getElementById('soundcloud-url').value;
-    getTrackData(url, function(data) {
-      Meteor.call("loadTrackRec", data.id, function () {
-        var pointId = Points.insert({trail: [{soundcloud: {id: data.id, url: url}}]});
-        Session.set('pointId', pointId);
-        Session.set('page', SoundAlchemist.view.POINT);
-      });
-    });
-  }
-}
-
 Backbone.history.start({pushState: true});

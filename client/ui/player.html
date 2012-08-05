@@ -1,6 +1,10 @@
 <template name="player">
-  <iframe frameborder="no" height="166" scrolling="no"
-          src="http://w.soundcloud.com/player/?url={{escapedUrl}}&auto_play=false&show_artwork=true&color=d31502"
-          width="100%">
-  </iframe>
+  {{#if escapedUrl}}
+    <iframe frameborder="no" height="166" scrolling="no"
+            src="http://w.soundcloud.com/player/?url={{escapedUrl}}&auto_play=true&show_artwork=true&color=d31502"
+            width="100%">
+    </iframe>
+  {{else}}
+    <div>Select a recommendation below...</div>
+  {{/if}}
 </template>

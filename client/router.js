@@ -14,4 +14,4 @@ SoundAlchemist.Router = Backbone.Router.extend({
   }
 });
 
-Router = new SoundAlchemist.Router();
+SoundAlchemistRouter = new SoundAlchemist.Router();

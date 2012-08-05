@@ -1,3 +1,4 @@
+console.log('restarting server...');
 
 Meteor.publish("point", function (pointId) {
   return Points.find({pointId: pointId});
@@ -7,57 +8,85 @@ Meteor.publish("trackRec", function (trackId) {
   return TrackRecs.find({trackId: trackId});
 });
 
+UserFavorites = new Meteor.Collection("userFavorites");
+
 Meteor.methods({
   loadTrackRec: function (trackId) {
     if (!TrackRecs.findOne({trackId: trackId})){
       // xcxc mark it as loading-in-progress immediately.
-      var trackInfo = Meteor.http.get(
-        "http://api.soundcloud.com/tracks/" + trackId +
-          ".json?client_id=17a48e602c9a59c5a713b456b60fea68").data;
-
       // xcxc offsets
-      var favoriters = Meteor.http.get(
+      var trackRec = {trackId: trackId};
+
+      // TODO(gregp): get *all* favoriters for a track.
+      console.log('DEBUG: Making request for favoriters of %s', trackId);
+      var favoriters = trackRec.favoriters = Meteor.http.get(
         "http://api.soundcloud.com/tracks/" + trackId +
           "/favoriters.json" +
           "?limit=200" +
           "&client_id=17a48e602c9a59c5a713b456b60fea68").data;
+      console.log('DEBUG: Got response for favoriters of %s', trackId);
 
-      // xcxc better term?
-      var relativity = {};
 
+      var relativity = trackRec.relativity = {};
       var futures = _.map(favoriters, function(favoriter) {
-        //    console.log('parsing ' + favoriter.username);
         var favoriterId = favoriter.id;
         var future = new Future();
-        var onGetFavorites = future.resolver();
+        var finished = future.resolver();
 
-        Meteor.http.get(
-          "http://api.soundcloud.com/users/" + favoriterId +
-            "/favorites.json" +
-            "?limit=200" +
-            "&duration[from]=1200000" +
-            "&client_id=17a48e602c9a59c5a713b456b60fea68", function(error, result) {
-              var favoriteTracks = result.data;
-              _.each(favoriteTracks, function(track) {
-                if (!relativity[track.id])
-                  relativity[track.id] = 0;
-                relativity[track.id]++;
-              });
+        var relativityFromFavorites = function(userFavorites) {
+          var favoriteTrackIds = userFavorites.trackIds;
+          _.each(favoriteTrackIds, function(id) {
+            if (!relativity[id]) {
+              relativity[id] = 0;
+            }
+            relativity[id]++;
+          });
+          finished();
+        };
 
-              onGetFavorites();
+        var userFavoritesReceived = function(error, result) {
+          if (error) {
+            // console.warn("Error in getting user %d's favorites: %s", favoriterId, error);
+            finished();
+          }
+
+          var userFavorites = {userId: favoriterId};
+          userFavorites.trackIds = _.map(result.data,
+            function(track) {
+              return track.id;
             });
+          UserFavorites.insert(userFavorites);
+          relativityFromFavorites(userFavorites);
+        };
 
+        var userFavorites = UserFavorites.findOne({userId: favoriterId});
+        if(!userFavorites) {
+          // console.log("DEBUG: Making request for %d's favorites...", favoriterId);
+          Meteor.http.get(
+            "http://api.soundcloud.com/users/" + favoriterId +
+              "/favorites.json" +
+              "?limit=200" +
+              "&duration[from]=1200000" +
+              "&client_id=17a48e602c9a59c5a713b456b60fea68",
+            userFavoritesReceived);
+        } else {
+          console.log("DEBUG: Cached %d's favorites...", favoriterId);
+          relativityFromFavorites(userFavorites);
+        }
         return future;
       });
 
       Future.wait(futures);
-      var trackRec = {
-        trackId: trackId,
-        relativity: relativity,
-        lastUpdate: +new Date()
-      };
+      trackRec.lastUpdate = +new Date();
       TrackRecs.insert(trackRec);
-      console.log('track inserted', trackRec);
+
+      // Just show that we got some data
+      var totalRelativity = _.reduce(_.values(trackRec.relativity),
+        function(memo, num){ return memo + num; }, 0);
+      console.log('DEBUG: TrackRec generated for %s, relativity = %d.',
+        trackRec.trackId, totalRelativity);
+    } else {
+      console.log('DEBUG: TrackRec cached for %s.', trackId);
     }
   }
 });

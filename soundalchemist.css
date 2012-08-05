@@ -2,6 +2,11 @@
     height: 30px;
 }
 
+.topbar .home {
+  float: left;
+  margin-right: 20px;
+}
+
 #soundcloud-url {
     width: 400px;
 }
