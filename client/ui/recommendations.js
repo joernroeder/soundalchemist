@@ -1,5 +1,5 @@
 Template.recommendations.list = function () {
-  return Session.get("recommendations");
+  return Session.get("point:recommendations");
 };
 
 Template.recommendation.size = function () {

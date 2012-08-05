@@ -13,30 +13,24 @@ SoundAlchemist.view.home.startJourney = function() {
     return;
   }
 
-  // TODO(gregp): getTrackData on register?
   var pointId = Session.get('startJourney:pointId');
   console.log('Starting journey from ' + pointId + ' at ' + url);
+  // TODO(gregp): specify at/_point_/to/_trackId_
   _SA.Router.navigate('at/' + pointId, {trigger: true});
 };
 
 
 // Validate the url and set it to the session
-SoundAlchemist.view.home.maybeRegisterUrl = function(url) {
+SoundAlchemist.view.home.maybeRegisterUrl = function(soundcloudUrl) {
   // TODO(gregp): url validation -- don't set if invalid
-  Session.set('startJourney:url', url);
+  Session.set('startJourney:url', soundcloudUrl);
   Session.set('startJourney:ready', false);
   Session.set('startJourney:pending', true);
 
   // Get a head start on the recommendations
-  getTrackData(url, function(data) {
-    Meteor.call("loadTrackRec", data.id, function() {
-      // TODO(gregp): this is not a valid trail...
-      var pointId = _SA.Points.insert({
-        trail: [
-          {soundcloud: {
-            id: data.id,
-            url: url}}
-        ]});
+  getTrackData(soundcloudUrl, function(soundcloudId) {
+    Meteor.call("loadTrackRec", soundcloudId, function() {
+      var pointId = getInitialPointId(soundcloudId, soundcloudUrl);
 
       // TODO(gregp): can Meteor set multiple session variables at once?
       Session.set('startJourney:pointId', pointId);

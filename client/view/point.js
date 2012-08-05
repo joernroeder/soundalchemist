@@ -3,7 +3,7 @@ if (typeof SoundAlchemist.view == "undefined") SoundAlchemist.view = {};
 
 SoundAlchemist.view.POINT = 'point';
 SoundAlchemist.view.point = function(pt) {
-  Session.set('pointId', pt);
+  Session.set('point:id', pt);
   Session.set('page', SoundAlchemist.view.POINT);
   Meteor.startup(SoundAlchemist.view.point.init);
 };

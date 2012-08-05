@@ -1,7 +1,5 @@
 Template.trail.list = function () {
-  var point = _SA.Points.findOne(Session.get("pointId"));
-  if (!point)
-    return [];
-  else
-    return point.trail;
+  var pointId = Session.get("point:id");
+  var point = _SA.Points.findOne({_id: pointId});
+  return (point && point.trail) || [];
 };
