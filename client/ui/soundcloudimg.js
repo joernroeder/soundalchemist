@@ -2,8 +2,8 @@ Template.soundcloudImg.DEFAULT_URL = 'http://pierre.chachatelier.fr/programmatio
 
 Template.soundcloudImg.imageUrl = function () {
   var url = this.url; // TODO(gregp): brittle, should be based on soundcloudId
-  // var track = _SA.Tracks.findOne({permalink_url: url});
-  var track = null;
+  var track = _SA.Tracks.findOne({permalink_url: url});
+  // var track = null;
   var imageUrl = Session.get('image-url-' + url);
   console.log('doing things for ' + url, track, imageUrl);
   if (imageUrl) {
