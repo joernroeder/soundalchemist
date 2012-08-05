@@ -26,7 +26,7 @@ if (Meteor.is_client) {
     var pointId = Session.get("point:id");
     var point = _SA.Points.findOne({pointId: pointId});
     if (!point) {
-      console.warn("DEBUG: Couldn't find point page still loading...?");
+      console.log('DEBUG: Couldn\'t find point page... still loading...?');
       return;
     }
 

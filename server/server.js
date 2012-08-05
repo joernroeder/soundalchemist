@@ -120,8 +120,7 @@ Meteor.methods({
       // Just show that we got some data
       var totalRelativity = _.reduce(_.values(trackRec.relativity),
         function(memo, num){ return memo + num; }, 0);
-      // console.log('DEBUG: TrackRec generated for %s, relativity count = %d.',
-        trackRec.trackId, totalRelativity);
+      // console.log('DEBUG: TrackRec generated for %s, relativity count = %d.', trackRec.trackId, totalRelativity);
     } else {
       // console.log('DEBUG: TrackRec cached for %s.', trackId);
     }
@@ -136,8 +135,7 @@ Meteor.methods({
       return recent.pointId == curPointId && recent.weight == weight;
     });
     if(found) {
-      // console.log('DEBUG: cached blazePoint %s from %s to %s, %j',
-        weight, curPointId, trackId, found);
+      // console.log('DEBUG: cached blazePoint %s from %s to %s, %j', weight, curPointId, trackId, found);
       return;
     }
 
