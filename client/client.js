@@ -22,7 +22,9 @@ var _registerTrackData = function(result, opt_callback) {
   // TODO(gregp): why does ^^ not work?
 
   Session.set('tracks:imageUrl+' + id,
-    trackData.artwork_url || Template.soundcloudImg.DEFAULT_URL);
+    trackData.artwork_url ||
+    (trackData.user && trackData.user.avatar_url) ||
+    Template.soundcloudImg.DEFAULT_URL);
   Session.set('tracks:url+' + id,
     trackData.permalink_url);
 
