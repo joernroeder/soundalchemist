@@ -43,8 +43,10 @@
     float: left;
 }
 
-.controls {
+.controls a {
+  margin: 3px;
 }
-.controls.disabled {
-  display: none;
+.controls .disabled {
+  opacity: 0.5;
+  cursor: normal;
 }

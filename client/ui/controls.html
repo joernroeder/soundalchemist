@@ -1,4 +1,8 @@
-<template name="controls" class="controls{{#if disabled}} disabled{{/if}}">
-  <a class="onward" href="onward">onward</a>
-  <a class="outward" href="outward">outward</a>
+<template name="controls" class="controls">
+  <div class="controls">
+    <a class="onward{{#if noOnward}} disabled{{/if}}"
+      href="{{onwardHref}}}">onward</a>
+    <a class="outward{{#if noOutward}} disabled{{/if}}"
+      href="{{outwardHref}}}">outward</a>
+  </div>
 </template>

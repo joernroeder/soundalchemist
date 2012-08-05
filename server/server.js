@@ -36,7 +36,7 @@ Meteor.methods({
       trackId: trackId,
       trailhead: true,
       trail: [{
-          pointId: pointId,
+          pointId: null,
           trackId: trackId,
           weight: 1
         }]
@@ -107,7 +107,7 @@ Meteor.methods({
               "&client_id=17a48e602c9a59c5a713b456b60fea68",
             userFavoritesReceived);
         } else {
-          // console.log("DEBUG: Cached %d's favorites...", favoriterId);
+          console.log("DEBUG: Cached %d's favorites...", favoriterId);
           relativityFromFavorites(userFavorites);
         }
         return future;
@@ -125,5 +125,45 @@ Meteor.methods({
     } else {
       console.log('DEBUG: TrackRec cached for %s.', trackId);
     }
+  },
+
+  blazePoint: function(curPointId, trackId, weight) {
+    // TODO(gregp): Probably the worst thing ever!
+    var potentials = _SA.Points.find({trackId: trackId}).fetch();
+    var found = _.find(potentials, function(point) {
+      if (!point.trail || !point.trail.length) return false;
+      var recent = point.trail[0];
+      return recent.pointId == curPointId && recent.weight == weight;
+    });
+    if(found) {
+      console.log("DEBUG: cached blazePoint %s from %s to %s, %j",
+        weight, curPointId, trackId, found);
+      return;
+    }
+
+    // Couldn't find it yet... continue.
+    console.log('DEBUG: blazing ', curPointId, trackId, weight);
+    Meteor.call('makeTrackRec', trackId);
+    // TODO(gregp): non-block here?
+
+    var newPointId = goog_string_getRandomString();
+    var curPoint = _SA.Points.findOne({pointId: curPointId});
+
+    var trail = curPoint.trail;
+    var trailPoint = {
+      pointId: curPointId,
+      trackId: trackId,
+      weight: weight
+    };
+    trail.unshift(trailPoint);
+
+    var newPoint = {
+      pointId: newPointId,
+      trackId: trackId,
+      trail: trail
+    };
+    console.log("DEBUG: creating newPoint", newPointId, newPoint);
+    _SA.Points.insert(newPoint);
+    return newPointId;
   }
 });

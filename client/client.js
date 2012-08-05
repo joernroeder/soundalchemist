@@ -17,7 +17,7 @@ var _registerTrackData = function(result, opt_callback) {
   var id = trackData.id;
   trackData.lastUpdate = +new Date();
 
-  // console.log("DEBUG: inserting track data for " + id, trackData);
+  console.log("DEBUG: inserting track data for " + id, trackData);
   _SA.Tracks.insert(trackData);
   // TODO(gregp): why does ^^ not work?
 

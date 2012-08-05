@@ -6,7 +6,8 @@ _SA.MAX_RECOMMENDATIONS = 30;
 
 var computeRecommendations = function(pointId) {
   var point = _SA.Points.findOne({pointId: pointId});
-  // console.log('DEBUG: computing recommendations for point', point);
+
+  console.log('DEBUG: computing recommendations for point', point);
   if (!point) {
     console.warn("There's no point!");
     return;
@@ -16,14 +17,19 @@ var computeRecommendations = function(pointId) {
   _.each(point.trail, function (trailPoint) {
     var weight = trailPoint.weight;
     var trackRec = _SA.TrackRecs.findOne({trackId: trailPoint.trackId});
-    // console.log('DEBUG: trackRec found', trackRec);
+    console.log('DEBUG: trackRec found', trackRec);
     _.each(trackRec.relativity, function(count, trackId) {
-      if (!intensity[trackId])
+      if (count === 0) {
+        debugger;
+        return; // TODO(gregp): why's this happen?
+      }
+      if (typeof intensity[trackId] == "undefined") {
         intensity[trackId] = 0;
+      }
       intensity[trackId] += count * weight;
     });
   });
-  // console.log('DEBUG: recommendation intensity', intensity);
+  console.log('DEBUG: recommendation intensity', intensity);
 
   // Need to squish the intensity map into an array so _ can sort it.
   var resultsArray = _.map(intensity, function(value, key) {
@@ -48,7 +54,7 @@ var computeRecommendations = function(pointId) {
     });
   }
 
-  // console.log('DEBUG: recommendation results', results);
+  console.log('DEBUG: recommendation results', results);
   _SA.PointRecs.insert({
     pointId: pointId,
     recommendations: results
