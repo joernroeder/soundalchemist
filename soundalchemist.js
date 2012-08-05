@@ -2,7 +2,7 @@ if (typeof _SA == "undefined") _SA = {};
 
 _SA.Points = new Meteor.Collection("Points");
 // console.log('DEBUG: resetting Points db...');
-_SA.Points.remove({});
+// _SA.Points.remove({});
 
 _SA.TrackRecs = new Meteor.Collection("TrackRecs");
 // CAUTION: THIS IS EXPENSIVE TO REBUILD!
