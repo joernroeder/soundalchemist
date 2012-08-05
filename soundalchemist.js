@@ -17,7 +17,7 @@ if (Meteor.is_client) {
     if (!point)
       return;
 
-    console.log(point);
+    console.log('Subscription got a point!', point);
     var pending = 0;
     _.each(point.trail, function (trailPoint) {
       pending++;
