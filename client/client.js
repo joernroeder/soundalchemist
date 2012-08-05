@@ -53,7 +53,7 @@ var computeRecommendations = function () {
   }));
 };
 
-var getTrackData = function(soundcloudUrl, callback) {
+var getTrackData = function(soundcloudUrl, opt_callback) {
   Meteor.http.get(
     "http://api.soundcloud.com/resolve.json?url=" + soundcloudUrl + "&client_id=17a48e602c9a59c5a713b456b60fea68",
     function (error, result) {
@@ -65,7 +65,7 @@ var getTrackData = function(soundcloudUrl, callback) {
         trackData.lastUpdate = +new Date();
         // console.log("DEBUG: inserting track data for " + id, trackData);
         _SA.Tracks.insert(trackData);
-        callback(id);
+        opt_callback && opt_callback(id);
       }
     });
 };

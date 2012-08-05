@@ -25,7 +25,7 @@ _SA.MOCK.SOUNDCLOUD_URLS = [
 _SA.MOCK.DEFAULT_URL = _SA.MOCK.SOUNDCLOUD_URLS[
   Math.floor(Math.random() * _SA.MOCK.SOUNDCLOUD_URLS.length)
 ];
-Session.set('startJourney:defaultUrl', _SA.MOCK.DEFAULT_URL);
+Session.set('home:defaultUrl', _SA.MOCK.DEFAULT_URL);
 SoundAlchemist.view.home.maybeRegisterUrl(_SA.MOCK.DEFAULT_URL);
 
 _SA.MOCK.RECOMMENDATIONS =  _.map(_SA.MOCK.SOUNDCLOUD_URLS, function(href) {

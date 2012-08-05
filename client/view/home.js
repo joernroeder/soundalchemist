@@ -8,12 +8,12 @@ SoundAlchemist.view.home = function() {
 
 // Passengers, buckle up!
 SoundAlchemist.view.home.startJourney = function() {
-  var url = Session.get('startJourney:url');
+  var url = Session.get('home:url');
   if (!url) {
     return;
   }
 
-  var pointId = Session.get('startJourney:pointId');
+  var pointId = Session.get('home:pointId');
   console.log('Starting journey from ' + pointId + ' at ' + url);
   // TODO(gregp): specify at/_point_/to/_trackId_
   _SA.Router.navigate('at/' + pointId, {trigger: true});
@@ -23,9 +23,9 @@ SoundAlchemist.view.home.startJourney = function() {
 // Validate the url and set it to the session
 SoundAlchemist.view.home.maybeRegisterUrl = function(soundcloudUrl) {
   // TODO(gregp): url validation -- don't set if invalid
-  Session.set('startJourney:url', soundcloudUrl);
-  Session.set('startJourney:ready', false);
-  Session.set('startJourney:pending', true);
+  Session.set('home:url', soundcloudUrl);
+  Session.set('home:ready', false);
+  Session.set('home:pending', true);
 
   // Get a head start on the recommendations
   getTrackData(soundcloudUrl, function(soundcloudId) {
@@ -33,9 +33,9 @@ SoundAlchemist.view.home.maybeRegisterUrl = function(soundcloudUrl) {
       var pointId = getInitialPointId(soundcloudId, soundcloudUrl);
 
       // TODO(gregp): can Meteor set multiple session variables at once?
-      Session.set('startJourney:pointId', pointId);
-      Session.set('startJourney:pending', false);
-      Session.set('startJourney:ready', true);
+      Session.set('home:pointId', pointId);
+      Session.set('home:pending', false);
+      Session.set('home:ready', true);
     });
   });
 };
@@ -54,7 +54,7 @@ SoundAlchemist.view.home.onUrlKeydown = function(ev) {
   var input = $(ev.target);
   // If escape, make sure the user remembers to add the http
   if (ev.keyCode == keyCodes.ESCAPE) {
-    input.val(Session.get('startJourney:defaultUrl'));
+    input.val(Session.get('home:defaultUrl'));
     return;
   }
 
@@ -76,7 +76,7 @@ SoundAlchemist.view.home.onUrlClick = function(ev) {
 
 SoundAlchemist.view.home.onUrlBlur = function(ev) {
   var input = $(ev.target);
-  input.val(Session.get('startJourney:defaultUrl'));
+  input.val(Session.get('home:defaultUrl'));
 };
 
 /////////////////// Start Journey Button //////////////////////
@@ -88,15 +88,15 @@ SoundAlchemist.view.home.onStartClick = function(ev) {
 //////////////////////// home Template def ////////////////////
 
 Template.home.defaultUrl = function() {
-  return Session.get('startJourney:defaultUrl');
+  return Session.get('home:defaultUrl');
 };
 
 Template.home.pending = function() {
-  return Session.get('startJourney:pending');
+  return Session.get('home:pending');
 };
 
 Template.home.notReady = function() {
-  return !Session.get('startJourney:ready');
+  return !Session.get('home:ready');
 };
 
 Template.home.events = {
@@ -107,5 +107,5 @@ Template.home.events = {
   'click #start-journey': SoundAlchemist.view.home.onStartClick
 };
 
-Session.set('startJourney:pending', false);
-Session.set('startJourney:ready', false);
+Session.set('home:pending', false);
+Session.set('home:ready', false);
