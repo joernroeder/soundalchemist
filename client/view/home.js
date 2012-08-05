@@ -32,7 +32,7 @@ SoundAlchemist.view.home.maybeRegisterUrl = function(soundcloudUrl) {
   Session.set('home:pending', true);
 
   // Get a head start on the recommendations
-  console.log('DEBUG: getting track data from url ', soundcloudUrl);
+  // console.log('DEBUG: getting track data from url ', soundcloudUrl);
   getTrackDataFromUrl(soundcloudUrl, function(trackId) {
     Session.set('home:trackId', trackId);
     Meteor.call("makeInitialPoint", trackId, function(error, pointId) {

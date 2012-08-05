@@ -1,13 +1,13 @@
 if (typeof _SA == "undefined") _SA = {};
 
 _SA.Points = new Meteor.Collection("Points");
-console.log('DEBUG: resetting Points db...');
+// console.log('DEBUG: resetting Points db...');
 _SA.Points.remove({});
 
 _SA.TrackRecs = new Meteor.Collection("TrackRecs");
 // CAUTION: THIS IS EXPENSIVE TO REBUILD!
 // /*
-console.log('DEBUG: resetting TrackRecs db...');
+// console.log('DEBUG: resetting TrackRecs db...');
 // _SA.TrackRecs.remove({});
 // */
 
@@ -33,25 +33,25 @@ if (Meteor.is_client) {
     // Make sure we're not recomputing a recommendation we already have.
     var pointRec = _SA.PointRecs.findOne({pointId: pointId});
     if (pointRec) {
-      console.log('DEBUG: using cached recommendations for ', pointRec);
+      // console.log('DEBUG: using cached recommendations for ', pointRec);
       return;
     }
 
     // Need to ensure we have TrackRec objects for each point in the trail
     // Only once we have all of them can we build the recommendations...
     var pending = 0;
-    console.log('DEBUG: getting trail recommendations for point', pointId, point);
+    // console.log('DEBUG: getting trail recommendations for point', pointId, point);
     _.each(point.trail, function (trailPoint) {
       var trailPointId = trailPoint.trackId;
 
       var trackRecs = _SA.TrackRecs.findOne({trackId: trailPointId});
       if (trackRecs) {
-        console.log('DEBUG: using cached track recommendations for point', trackRecs, trailPoint);
+        // console.log('DEBUG: using cached track recommendations for point', trackRecs, trailPoint);
         return;
       }
 
       pending++;
-      console.log('DEBUG: subscribing to trackRec for point', trailPoint);
+      // console.log('DEBUG: subscribing to trackRec for point', trailPoint);
       Meteor.subscribe("trackRec", trailPointId, function () {
         pending--;
         if (!pending) {

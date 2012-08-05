@@ -13,7 +13,7 @@ Meteor.publish("pointByTrackId", function (trackId) {
 });
 
 Meteor.publish("trackRec", function (trackId) {
-  console.log("DEBUG: looking for trackRec for ", trackId);
+  // console.log('DEBUG: looking for trackRec for ', trackId);
   return _SA.TrackRecs.find({trackId: trackId});
 });
 
@@ -26,7 +26,7 @@ Meteor.methods({
     var point = _SA.Points.findOne({trackId: trackId, trailhead: true});
     if (point) {
       var pointId = point.pointId;
-      console.log("DEBUG: cached initialPoint", pointId, point);
+      // console.log('DEBUG: cached initialPoint', pointId, point);
       return pointId;
     }
 
@@ -42,7 +42,7 @@ Meteor.methods({
         }]
     };
     _SA.Points.insert(initialPoint);
-    console.log("DEBUG: creating initialPoint", pointId, initialPoint);
+    // console.log('DEBUG: creating initialPoint', pointId, initialPoint);
     return pointId;
   },
 
@@ -53,13 +53,13 @@ Meteor.methods({
       var trackRec = {trackId: trackId};
 
       // TODO(gregp): get *all* favoriters for a track in background thread...
-      console.log('DEBUG: Making request for favoriters of %s', trackId);
+      // console.log('DEBUG: Making request for favoriters of %s', trackId);
       var favoriters = trackRec.favoriters = Meteor.http.get(
         "http://api.soundcloud.com/tracks/" + trackId +
           "/favoriters.json" +
           "?limit=200" +
           "&client_id=17a48e602c9a59c5a713b456b60fea68").data;
-      console.log('DEBUG: Got response for favoriters of %s', trackId);
+      // console.log('DEBUG: Got response for favoriters of %s', trackId);
 
 
       var relativity = trackRec.relativity = {};
@@ -85,7 +85,7 @@ Meteor.methods({
             finished();
           }
 
-          console.log("DEBUG: Got response for %d's favorites...", favoriterId);
+          // console.log('DEBUG: Got response for %d\'s favorites...', favoriterId);
 
           var userFavorites = {userId: favoriterId};
           userFavorites.trackIds = _.map(result.data,
@@ -98,7 +98,7 @@ Meteor.methods({
 
         var userFavorites = _SA.UserFavorites.findOne({userId: favoriterId});
         if(!userFavorites) {
-          console.log("DEBUG: Making request for %d's favorites...", favoriterId);
+          // console.log('DEBUG: Making request for %d\'s favorites...', favoriterId);
           Meteor.http.get(
             "http://api.soundcloud.com/users/" + favoriterId +
               "/favorites.json" +
@@ -107,7 +107,7 @@ Meteor.methods({
               "&client_id=17a48e602c9a59c5a713b456b60fea68",
             userFavoritesReceived);
         } else {
-          console.log("DEBUG: Cached %d's favorites...", favoriterId);
+          // console.log('DEBUG: Cached %d\'s favorites...', favoriterId);
           relativityFromFavorites(userFavorites);
         }
         return future;
@@ -120,10 +120,10 @@ Meteor.methods({
       // Just show that we got some data
       var totalRelativity = _.reduce(_.values(trackRec.relativity),
         function(memo, num){ return memo + num; }, 0);
-      console.log('DEBUG: TrackRec generated for %s, relativity count = %d.',
+      // console.log('DEBUG: TrackRec generated for %s, relativity count = %d.',
         trackRec.trackId, totalRelativity);
     } else {
-      console.log('DEBUG: TrackRec cached for %s.', trackId);
+      // console.log('DEBUG: TrackRec cached for %s.', trackId);
     }
   },
 
@@ -136,13 +136,13 @@ Meteor.methods({
       return recent.pointId == curPointId && recent.weight == weight;
     });
     if(found) {
-      console.log("DEBUG: cached blazePoint %s from %s to %s, %j",
+      // console.log('DEBUG: cached blazePoint %s from %s to %s, %j',
         weight, curPointId, trackId, found);
       return;
     }
 
     // Couldn't find it yet... continue.
-    console.log('DEBUG: blazing ', curPointId, trackId, weight);
+    // console.log('DEBUG: blazing ', curPointId, trackId, weight);
     Meteor.call('makeTrackRec', trackId);
     // TODO(gregp): non-block here?
 
@@ -162,7 +162,7 @@ Meteor.methods({
       trackId: trackId,
       trail: trail
     };
-    console.log("DEBUG: creating newPoint", newPointId, newPoint);
+    // console.log('DEBUG: creating newPoint', newPointId, newPoint);
     _SA.Points.insert(newPoint);
     return newPointId;
   }

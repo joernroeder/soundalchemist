@@ -13,7 +13,7 @@ SoundAlchemist.view.point = function(pt) {
     Meteor.autosubscribe(SoundAlchemist.view.point.orient);
     Meteor.autosubscribe(SoundAlchemist.view.point.isotopeInit);
   } else {
-    console.log('DEBUG: moving to a different point...');
+    // console.log('DEBUG: moving to a different point...');
   }
 
   // Watch for recommendations injection; need to reflow at that time
@@ -31,7 +31,7 @@ SoundAlchemist.view.point.isotopeInit = function() {
   Session.get('point:recommendations');
   var pointId = Session.get('point:id');
   if(Session.get('point:recommendationsOK+' + pointId)) {
-    console.log("DEBUG: initializing isotope.");
+    // console.log('DEBUG: initializing isotope.');
     // Initialize isotope
     // - with experimental masonry gutterWidth setting:
     //   http://masonry.desandro.com/demos/gutters.html
@@ -65,7 +65,7 @@ SoundAlchemist.view.point.disorient = function() {
 
   Session.set('player:onwardPoint', null);
   Session.set('player:outwardPoint', null);
-  console.log("DEBUG: onward/outward disabled pending orientation", pointId, trackId);
+  // console.log('DEBUG: onward/outward disabled pending orientation', pointId, trackId);
 };
 
 
@@ -79,7 +79,7 @@ SoundAlchemist.view.point.orient = function() {
     return point.trail && point.trail.length && point.trail[0].weight == 1;
   });
   if (onwardPoint) {
-    console.log("DEBUG: onward point found", onwardPoint);
+    // console.log('DEBUG: onward point found', onwardPoint);
     Session.set('player:onwardPoint', onwardPoint.pointId);
     nothing = false;
   }
@@ -88,13 +88,13 @@ SoundAlchemist.view.point.orient = function() {
     return point.trail && point.trail.length && point.trail[0].weight == -1;
   });
   if (outwardPoint) {
-    console.log("DEBUG: outward point found", outwardPoint);
+    // console.log('DEBUG: outward point found', outwardPoint);
     Session.set('player:outwardPoint', outwardPoint.pointId);
     nothing = false;
   }
 
   if (nothing) {
-    console.log("DEBUG: points found but non-blaze-relevant", points);
+    // console.log('DEBUG: points found but non-blaze-relevant', points);
   }
 };
 
