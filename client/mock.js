@@ -26,9 +26,3 @@ _SA.MOCK.DEFAULT_URL = _SA.MOCK.SOUNDCLOUD_URLS[
   Math.floor(Math.random() * _SA.MOCK.SOUNDCLOUD_URLS.length)
 ];
 Session.set('home:defaultUrl', _SA.MOCK.DEFAULT_URL);
-SoundAlchemist.view.home.maybeRegisterUrl(_SA.MOCK.DEFAULT_URL);
-
-// _SA.MOCK.RECOMMENDATIONS =  _.map(_SA.MOCK.SOUNDCLOUD_URLS, function(href) {
-//   return {url: href, rank: Math.random() * 100};
-// });
-// Session.set('point:recommendations', _SA.MOCK.RECOMMENDATIONS);

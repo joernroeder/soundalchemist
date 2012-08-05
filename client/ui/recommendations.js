@@ -1,5 +1,4 @@
 Template.recommendations.list = function () {
-  Session.get('point:recommendations');
   var pointId = Session.get("point:id");
   var pointRec = _SA.PointRecs.findOne({pointId: pointId});
   if (!pointRec) return [];

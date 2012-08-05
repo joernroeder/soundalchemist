@@ -42,3 +42,9 @@
 .trail-vote {
     float: left;
 }
+
+.controls {
+}
+.controls.disabled {
+  display: none;
+}

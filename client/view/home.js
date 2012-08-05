@@ -4,6 +4,11 @@ if (typeof SoundAlchemist.view == "undefined") SoundAlchemist.view = {};
 SoundAlchemist.view.HOME = 'home';
 SoundAlchemist.view.home = function() {
   Session.set('page', SoundAlchemist.view.HOME);
+
+  var defaultUrl = Session.get('home:defaultUrl');
+  if (defaultUrl) {
+    SoundAlchemist.view.home.maybeRegisterUrl(defaultUrl);
+  }
 };
 
 // Passengers, buckle up!
@@ -27,6 +32,7 @@ SoundAlchemist.view.home.maybeRegisterUrl = function(soundcloudUrl) {
   Session.set('home:pending', true);
 
   // Get a head start on the recommendations
+  console.log('DEBUG: getting track data from url ', soundcloudUrl);
   getTrackDataFromUrl(soundcloudUrl, function(trackId) {
     Session.set('home:trackId', trackId);
     Meteor.call("makeInitialPoint", trackId, function(error, pointId) {

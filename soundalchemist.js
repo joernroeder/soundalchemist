@@ -11,7 +11,7 @@ _SA.TrackRecs = new Meteor.Collection("TrackRecs");
 // _SA.TrackRecs.remove({});
 // */
 
-// TODO(gregp): bleh
+// TODO(gregp): put this better...
 var goog_string_getRandomString = function() {
   var x = 2147483648;
   return Math.floor(Math.random() * x).toString(36) +
@@ -26,15 +26,15 @@ if (Meteor.is_client) {
     var pointId = Session.get("point:id");
     var point = _SA.Points.findOne({pointId: pointId});
     if (!point) {
-      console.warn("Couldn't find point, hopefully page is still loading...");
+      // console.warn("DEBUG: Couldn't find point page still loading...?");
       return;
     }
 
-    console.log('DEBUG: getting trail recommendations for point', point);
     // Need to ensure we have TrackRec objects for each point in the trail
     // Only once we have all of them can we build the recommendations...
 
     var pending = 0;
+    // console.log('DEBUG: getting trail recommendations for point', pointId, point);
     _.each(point.trail, function (trailPoint) {
       pending++;
       Meteor.subscribe("trackRec", trailPoint.trackId, function () {
