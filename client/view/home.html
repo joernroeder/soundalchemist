@@ -1,4 +1,7 @@
 <template name="home">
-  <input id="soundcloud-url" value="http://soundcloud.com/aeroplane/aeroplane-february-2012-mix" />
-  <button id="start-journey">Start journey</button>
+  <input id="soundcloud-url" value="{{defaultUrl}}" />
+  <button id="start-journey" {{#if notReady}}disabled="disabled"{{/if}}>
+    Start journey
+  </button>
+  {{#if pending}}Preparing vehicle...{{/if}}
 </template>

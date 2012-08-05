@@ -1,23 +1,25 @@
+if (typeof _SA == "undefined") _SA = {};
+
 console.log('restarting server...');
 
+_SA.UserFavorites = new Meteor.Collection("UserFavorites");
+
 Meteor.publish("point", function (pointId) {
-  return Points.find({pointId: pointId});
+  return _SA.Points.find({pointId: pointId});
 });
 
 Meteor.publish("trackRec", function (trackId) {
-  return TrackRecs.find({trackId: trackId});
+  return _SA.TrackRecs.find({trackId: trackId});
 });
-
-UserFavorites = new Meteor.Collection("userFavorites");
 
 Meteor.methods({
   loadTrackRec: function (trackId) {
-    if (!TrackRecs.findOne({trackId: trackId})){
+    if (!_SA.TrackRecs.findOne({trackId: trackId})){
       // xcxc mark it as loading-in-progress immediately.
       // xcxc offsets
       var trackRec = {trackId: trackId};
 
-      // TODO(gregp): get *all* favoriters for a track.
+      // TODO(gregp): get *all* favoriters for a track in background thread...
       console.log('DEBUG: Making request for favoriters of %s', trackId);
       var favoriters = trackRec.favoriters = Meteor.http.get(
         "http://api.soundcloud.com/tracks/" + trackId +
@@ -50,18 +52,20 @@ Meteor.methods({
             finished();
           }
 
+          console.log("DEBUG: Got response for %d's favorites...", favoriterId);
+
           var userFavorites = {userId: favoriterId};
           userFavorites.trackIds = _.map(result.data,
             function(track) {
               return track.id;
             });
-          UserFavorites.insert(userFavorites);
+          _SA.UserFavorites.insert(userFavorites);
           relativityFromFavorites(userFavorites);
         };
 
-        var userFavorites = UserFavorites.findOne({userId: favoriterId});
+        var userFavorites = _SA.UserFavorites.findOne({userId: favoriterId});
         if(!userFavorites) {
-          // console.log("DEBUG: Making request for %d's favorites...", favoriterId);
+          console.log("DEBUG: Making request for %d's favorites...", favoriterId);
           Meteor.http.get(
             "http://api.soundcloud.com/users/" + favoriterId +
               "/favorites.json" +
@@ -78,12 +82,12 @@ Meteor.methods({
 
       Future.wait(futures);
       trackRec.lastUpdate = +new Date();
-      TrackRecs.insert(trackRec);
+      _SA.TrackRecs.insert(trackRec);
 
       // Just show that we got some data
       var totalRelativity = _.reduce(_.values(trackRec.relativity),
         function(memo, num){ return memo + num; }, 0);
-      console.log('DEBUG: TrackRec generated for %s, relativity = %d.',
+      console.log('DEBUG: TrackRec generated for %s, relativity count = %d.',
         trackRec.trackId, totalRelativity);
     } else {
       console.log('DEBUG: TrackRec cached for %s.', trackId);

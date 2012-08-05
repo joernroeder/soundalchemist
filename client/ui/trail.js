@@ -1,5 +1,5 @@
 Template.trail.list = function () {
-  var point = Points.findOne(Session.get("pointId"));
+  var point = _SA.Points.findOne(Session.get("pointId"));
   if (!point)
     return [];
   else
