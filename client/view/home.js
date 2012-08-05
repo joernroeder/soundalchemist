@@ -13,12 +13,11 @@ SoundAlchemist.view.home.startJourney = function() {
     return;
   }
 
-  var pointId = Session.get('home:pointId');
+  var pointId = Session.get('point:id');
   console.log('Starting journey from ' + pointId + ' at ' + url);
   // TODO(gregp): specify at/_point_/to/_trackId_
   _SA.Router.navigate('at/' + pointId, {trigger: true});
 };
-
 
 // Validate the url and set it to the session
 SoundAlchemist.view.home.maybeRegisterUrl = function(soundcloudUrl) {
@@ -28,12 +27,14 @@ SoundAlchemist.view.home.maybeRegisterUrl = function(soundcloudUrl) {
   Session.set('home:pending', true);
 
   // Get a head start on the recommendations
-  getTrackData(soundcloudUrl, function(soundcloudId) {
-    Meteor.call("loadTrackRec", soundcloudId, function() {
-      var pointId = getInitialPointId(soundcloudId, soundcloudUrl);
+  getTrackDataFromUrl(soundcloudUrl, function(trackId) {
+    Session.set('home:trackId', trackId);
+    Meteor.call("makeInitialPoint", trackId, function(error, pointId) {
+      if (error) {throw error;}
+      Session.set('point:id', pointId);
 
+      // TODO(gregp): this needs to wait for *POINTREC* actually
       // TODO(gregp): can Meteor set multiple session variables at once?
-      Session.set('home:pointId', pointId);
       Session.set('home:pending', false);
       Session.set('home:ready', true);
     });

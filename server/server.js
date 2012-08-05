@@ -8,12 +8,45 @@ Meteor.publish("point", function (pointId) {
   return _SA.Points.find({pointId: pointId});
 });
 
+Meteor.publish("pointByTrackId", function (trackId) {
+  return _SA.Points.find({trackId: trackId});
+});
+
 Meteor.publish("trackRec", function (trackId) {
+  console.log("DEBUG: looking for trackRec for ", trackId);
   return _SA.TrackRecs.find({trackId: trackId});
 });
 
 Meteor.methods({
-  loadTrackRec: function (trackId) {
+  makeInitialPoint: function(trackId) {
+    // Get the TrackRec going since we're probably going to need it
+    //  (and it's expensive as hell)
+    Meteor.call('makeTrackRec', trackId);
+
+    var point = _SA.Points.findOne({trackId: trackId, trailhead: true});
+    if (point) {
+      var pointId = point.pointId;
+      console.log("DEBUG: cached initialPoint", pointId, point);
+      return pointId;
+    }
+
+    var pointId = goog_string_getRandomString();
+    var initialPoint = {
+      pointId: pointId,
+      trackId: trackId,
+      trailhead: true,
+      trail: [{
+          pointId: pointId,
+          trackId: trackId,
+          weight: 1
+        }]
+    };
+    _SA.Points.insert(initialPoint);
+    console.log("DEBUG: creating initialPoint", pointId, initialPoint);
+    return pointId;
+  },
+
+  makeTrackRec: function (trackId) {
     if (!_SA.TrackRecs.findOne({trackId: trackId})){
       // xcxc mark it as loading-in-progress immediately.
       // xcxc offsets
@@ -74,7 +107,7 @@ Meteor.methods({
               "&client_id=17a48e602c9a59c5a713b456b60fea68",
             userFavoritesReceived);
         } else {
-          console.log("DEBUG: Cached %d's favorites...", favoriterId);
+          // console.log("DEBUG: Cached %d's favorites...", favoriterId);
           relativityFromFavorites(userFavorites);
         }
         return future;
