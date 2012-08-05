@@ -135,12 +135,12 @@ Meteor.methods({
       return recent.pointId == curPointId && recent.weight == weight;
     });
     if(found) {
-      // console.log('DEBUG: cached blazePoint %s from %s to %s, %j', weight, curPointId, trackId, found);
+      console.log('DEBUG: cached blazePoint %s from %s to %s, %j', weight, curPointId, trackId, found);
       return;
     }
 
     // Couldn't find it yet... continue.
-    // console.log('DEBUG: blazing ', curPointId, trackId, weight);
+    console.log('DEBUG: blazing ', curPointId, trackId, weight);
     Meteor.call('makeTrackRec', trackId);
     // TODO(gregp): non-block here?
 
@@ -160,7 +160,7 @@ Meteor.methods({
       trackId: trackId,
       trail: trail
     };
-    // console.log('DEBUG: creating newPoint', newPointId, newPoint);
+    console.log('DEBUG: creating newPoint', newPointId, newPoint);
     _SA.Points.insert(newPoint);
     return newPointId;
   }
