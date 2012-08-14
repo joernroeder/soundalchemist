@@ -69,7 +69,6 @@ keyCodes = {
 };
 
 ////////////////// URL Input Field ////////////////////////
-// TODO(yanivoliver): pasting a url causes weird keydown behaviour - fix it.
 SoundAlchemist.view.home.onUrlKeydown = function(ev) {
   var input = $(ev.target);
   // If escape, make sure the user remembers to add the http
@@ -109,10 +108,21 @@ SoundAlchemist.view.home.onUrlBlur = function(ev) {
   SoundAlchemist.view.home.validateUrl(input.val());
 };
 
+SoundAlchemist.view.home.onPaste = function(ev) {
+  if (window.clipboardData && window.clipboardData.getData) { // IE
+      pastedText = window.clipboardData.getData('Text');
+  } else if (ev.clipboardData && ev.clipboardData.getData) {
+      pastedText = ev.clipboardData.getData('text/plain');
+  }
+
+  if (SoundAlchemist.view.home.validateUrl(pastedText)) {
+      Session.set('home:url', pastedText);
+  }
+};
+
 /////////////////// Start Journey Button //////////////////////
 SoundAlchemist.view.home.onStartClick = function(ev) {
   var input = $(ev.target);
-  debugger;
   SoundAlchemist.view.home.registerUrlAndStartJourney();
 };
 
@@ -137,6 +147,7 @@ Template.home.badUrl = function() {
 
 Template.home.events = {
   'keydown #soundcloud-url': SoundAlchemist.view.home.onUrlKeydown,
+  'paste #soundcloud-url': SoundAlchemist.view.home.onPaste,
   'focusout #soundcloud-url': SoundAlchemist.view.home.onUrlBlur,
   'click #soundcloud-url': SoundAlchemist.view.home.onUrlClick,
   'click #start-journey': SoundAlchemist.view.home.onStartClick
