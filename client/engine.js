@@ -4,6 +4,14 @@ _SA.PointRecs = _SA.PointRecs || new Meteor.Collection(null);
 // TODO(gregp): infinite scroll..... ...
 _SA.MAX_RECOMMENDATIONS = 30;
 
+/**
+ * This function should be autosubscribed in such a way that it is called when
+ *  all the trackRecs for the trail of the given point are available. (IE:they
+ *  have been calculated on the server).
+ * It inserts a pointRec into the (local) database with recommendations for the
+ *  given point.
+ * This can cause the recommendations UI to update with the new pointRec.
+ */
 var computeRecommendations = function(pointId) {
   var point = _SA.Points.findOne({pointId: pointId});
 
@@ -13,6 +21,9 @@ var computeRecommendations = function(pointId) {
     return;
   }
 
+  // The intensity object maps track IDs to the the cumulative affinity
+  //  at the given point, calculated by adding the number of shared favoriters
+  //  of the current and trail tracks, multiplied by the weight of the trail //  track.
   var intensity = {};
   _.each(point.trail, function (trailPoint) {
     var weight = trailPoint.weight;
@@ -20,14 +31,21 @@ var computeRecommendations = function(pointId) {
     // console.log('DEBUG: trackRec found', trackRec);
     _.each(trackRec.relativity, function(count, trackId) {
       if (count === 0) {
-        debugger;
+        // console.log('ERROR: zero count relativity!');
         return; // TODO(gregp): why's this happen?
       }
       if (typeof intensity[trackId] == "undefined") {
+        // We have not seen this point before
         intensity[trackId] = 0;
       }
       intensity[trackId] += count * weight;
     });
+  });
+
+  // We need to remove all the points on the trail, since we've already been
+  _.each(point.trail, function (trailPoint) {
+    var trackId = trailPoint.trackId;
+    delete intensity[trackId];
   });
   // console.log('DEBUG: recommendation intensity', intensity);
 
