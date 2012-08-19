@@ -50,3 +50,10 @@
   opacity: 0.5;
   cursor: normal;
 }
+
+.clearfix {
+  clear: both;
+}
+.trail {
+  clear: both;
+}
