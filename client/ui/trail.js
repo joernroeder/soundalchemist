@@ -8,3 +8,7 @@ Template.trail.list = function () {
 Template.trail.vote = function () {
   return this.weight > 0 ? '+' : '-';
 };
+
+Template.trail.url = function () {
+  return '/at/' + this.pointId;
+};

@@ -1,8 +1,10 @@
 <template name="trail">
   <div class="trail">
     {{#each list}}
-    <div class="trail-item">{{> soundcloudImg}}</div>
-    <div class="trail-vote">{{vote}}</div>
+      <div class="trail-item">
+        {{> soundcloudImg}}
+        <div class="trail-vote">{{vote}}</div>
+      </div>
     {{/each}}
     <div class="clearfix"></div>
   </div>
