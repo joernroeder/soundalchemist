@@ -105,6 +105,12 @@ SoundAlchemist.view.point.isotopeInit = function() {
 };
 
 
+/**
+ * Indicates that we're looking in a new direction (playing a new, potentially
+ *  unknown track), and need to fetch the onward & outward points relevant to
+ *  that direction.
+ * TODO(gregp): this should ideally *hide* the onward & outward points
+ */
 SoundAlchemist.view.point.disorient = function() {
   var trackId = Session.get('player:trackId');
   var pointId = Session.get('point:id');
@@ -119,7 +125,10 @@ SoundAlchemist.view.point.disorient = function() {
   // console.log('DEBUG: onward/outward disabled pending orientation', pointId, trackId);
 };
 
-
+/**
+ * Indicates that we now have knowledge about the onward & outward points.
+ * TODO(gregp): this should ideally cause the onward & outward points to *show*
+ */
 SoundAlchemist.view.point.orient = function() {
   var trackId = Session.get('player:trackId');
   var pointId = Session.get('point:id');
