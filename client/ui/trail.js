@@ -5,8 +5,8 @@ Template.trail.list = function () {
   return result;
 };
 
-Template.trail.vote = function () {
-  return this.weight > 0 ? '+' : '-';
+Template.trail.outwards = function () {
+  return this.weight < 0;
 };
 
 Template.trail.url = function () {

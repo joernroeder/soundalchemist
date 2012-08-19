@@ -3,9 +3,16 @@
     {{#each list}}
       <div class="trail-item">
         {{> soundcloudImg}}
-        <div class="trail-vote">{{vote}}</div>
+        <div class="trail-vote">
+          {{#if outwards}}
+          <img class="trail-step-icon" src="/outwards.png" />
+          {{else}}
+          <img class="trail-step-icon" src="/inwards.png" />
+          {{/if}}
+        </div>
       </div>
     {{/each}}
     <div class="clearfix"></div>
   </div>
 </template>
+
