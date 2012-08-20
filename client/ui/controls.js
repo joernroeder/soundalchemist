@@ -35,11 +35,11 @@ Template.controls.outwardHref = function() {
 Template.controls.events = {
   'click .inwards-button': function (ev) {
     ev.preventDefault();
-    SoundAlchemist.view.point.blaze(Session.get('player:onwardPoint'));
+    setPointId(Session.get('player:onwardPoint'));
   },
 
   'click .outwards-button': function (ev) {
     ev.preventDefault();
-    SoundAlchemist.view.point.blaze(Session.get('player:outwardPoint'));
+    setPointId(Session.get('player:outwardPoint'));
   }
 };

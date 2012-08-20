@@ -19,10 +19,11 @@ var makePoint = function(point, trackId, weight) {
     return trailPoint.trackId + '_' + trailPoint.weight;
   }).join('___');
 
-  newPointId = Meteor._srp.SHA256(newPointId);
-  console.log('DEBUG: blazing ', newPointId, trackId, weight);
+  newPointId = Meteor._srp.SHA256(newPointId).substring(0, 16);
 
-  // if() // new pointId exists
+  // TODO(gregp): deal with duplicate points
+  // if() // new pointId exists, return it
+  // console.log('DEBUG: blazing ', newPointId, trackId, weight);
 
   var newTrail = _.clone(point.trail);
   // The current trailPoint to prepend to the trail to make the new point
@@ -38,7 +39,7 @@ var makePoint = function(point, trackId, weight) {
     trackId: trackId,
     trail: newTrail
   };
-  console.log('DEBUG: creating newPoint', newPointId, newPoint);
+  // console.log('DEBUG: creating newPoint', newPointId, newPoint);
   _SA.Points.insert(newPoint);
   return newPointId;
 };

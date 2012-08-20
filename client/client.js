@@ -64,10 +64,12 @@ var setTrackId = function(trackId) {
   if (trackId != Session.get('player:trackId')) {
     Session.set('player:trackId', trackId);
 
-    // disorient();
+    // disorient(); // indicate that we don't know the next points yet
     Session.set('player:onwardPoint', null);
     Session.set('player:outwardPoint', null);
     Meteor.call('makeTrackRec', trackId, orient);
+
+    registerAutoPlay();
   }
 };
 
@@ -81,4 +83,8 @@ var orient = function() {
 
   Session.set('player:onwardPoint', onwardId);
   Session.set('player:outwardPoint', outwardId);
+};
+
+var registerAutoPlay = function() {
+  Meteor.flush();
 };
