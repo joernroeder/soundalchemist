@@ -76,6 +76,10 @@ SoundAlchemist.view.point.buildPointRec = function() {
 
 Meteor.autosubscribe(SoundAlchemist.view.point.buildPointRec);
 
+Template.point.isPlaying = function () {
+  return !!Session.get('player:trackId');
+};
+
 
 SoundAlchemist.view.point.isotopeInit = function() {
   Session.get('point:recommendations');
