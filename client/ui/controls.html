@@ -1,8 +1,14 @@
 <template name="controls" class="controls">
+  {{#if ready}}
   <div class="controls">
-    <a class="onward{{#if noOnward}} disabled{{/if}}"
-      href="{{onwardHref}}}">onward</a>
-    <a class="outward{{#if noOutward}} disabled{{/if}}"
-      href="{{outwardHref}}}">outward</a>
+    <input type="button" title="Inwards" class="inwards-button" />
+    <input type="button" title="Outwards" class="outwards-button" />
   </div>
+  {{else}}
+  <div class="controls-not-ready">
+    Sending scout...
+  </div>
+  {{/if}}
+
 </template>
+

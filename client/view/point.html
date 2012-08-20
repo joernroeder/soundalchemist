@@ -4,7 +4,20 @@
     {{> loginButtons}}
   </div>
   {{> trail}}
-  {{> player}}
-  {{> controls}}
+
+  {{#if escapedUrl}}
+  <div class="player-and-controls">
+    <div class="player-container">
+      {{> player}}
+    </div>
+    <div class="controls-container">
+      {{> controls}}
+    </div>
+  </div>
+  {{else}}
+  <div>Select a recommendation below...</div>
+  {{/if}}
+
   {{> recommendations}}
 </template>
+

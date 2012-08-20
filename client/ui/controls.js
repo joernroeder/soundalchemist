@@ -8,6 +8,11 @@ Template.controls.noOutward = function() {
   return !outwardPt;
 };
 
+Template.controls.ready = function () {
+  return Session.get('player:outwardPoint') !== null;
+};
+
+// TODO(avitalo) - we currently don't use these at all.
 Template.controls.onwardHref = function() {
   var onwardPt = Session.get('player:onwardPoint');
   if(onwardPt) {
@@ -28,21 +33,13 @@ Template.controls.outwardHref = function() {
 
 
 Template.controls.events = {
-  'click .onward': function (ev) {
+  'click .inwards-button': function (ev) {
     ev.preventDefault();
-    if ($(ev.target).hasClass('disabled')) {
-      console.log('NOAP');
-    } else {
-      SoundAlchemist.view.point.blaze(Session.get('player:onwardPoint'));;
-    }
+    SoundAlchemist.view.point.blaze(Session.get('player:onwardPoint'));
   },
 
-  'click .outward': function (ev) {
+  'click .outwards-button': function (ev) {
     ev.preventDefault();
-    if ($(ev.target).hasClass('disabled')) {
-      console.log('NOAP');
-    } else {
-      SoundAlchemist.view.point.blaze(Session.get('player:outwardPoint'))
-    }
+    SoundAlchemist.view.point.blaze(Session.get('player:outwardPoint'));
   }
 };

@@ -43,19 +43,12 @@
     float: left;
 }
 
-.controls a {
-  margin: 3px;
-}
-.controls .disabled {
-  opacity: 0.5;
-  cursor: normal;
-}
-
 .clearfix {
   clear: both;
 }
 .trail {
   clear: both;
+  height: 150px;
 }
 .trail-vote {
     margin-left: 20%; /* gross but seems to work */
@@ -67,4 +60,51 @@
 .trail-step-icon {
     width: 40px;
     height: 40px;
+}
+.player-and-controls {
+    width: 100%;
+    height: 166px;
+    position: relative;
+}
+.player-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 100px;
+}
+.controls {
+    margin-top: 24px;
+    margin-left: 25px;
+}
+.controls-container {
+    position: absolute;
+    width: 100px;
+    top: 0;
+    right: 0;
+}
+.controls-not-ready {
+    margin-top: 58px;
+    margin-left: 15px;
+    margin-right: 15px;
+}
+input.inwards-button {
+    background-image: url(/inwards50.png);
+    background-color: transparent;
+    background-repeat: no-repeat;
+    border: none;
+    cursor: pointer;        /* make the cursor like hovering over an <a> element */
+    height: 50px;
+    padding-left: 50px;     /* make text start to the right of the image */
+    vertical-align: middle; /* align the text vertically centered */
+    margin-bottom: 18px;
+}
+input.outwards-button {
+    background-image: url(/outwards50.png);
+    background-color: transparent;
+    background-repeat: no-repeat;
+    border: none;
+    cursor: pointer;        /* make the cursor like hovering over an <a> element */
+    height: 50px;
+    padding-left: 50px;     /* make text start to the right of the image */
+    vertical-align: middle; /* align the text vertically centered */
 }
