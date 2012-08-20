@@ -1,6 +1,9 @@
 <template name="player">
   {{#if escapedUrl}}
-    <iframe frameborder="no" height="166" scrolling="no"
+    <iframe id="playa"
+            frameborder="no"
+            height="166"
+            scrolling="no"
             src="http://w.soundcloud.com/player/?url={{escapedUrl}}&auto_play=true&show_artwork=true&color=d31502"
             width="100%">
     </iframe>

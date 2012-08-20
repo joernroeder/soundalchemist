@@ -9,6 +9,7 @@ _SA.TrackRecs = _SA.TrackRecs || new Meteor.Collection("TrackRecs");
 SoundAlchemist.view.POINT = 'point';
 SoundAlchemist.view.point = function(pt) {
   Session.set('point:id', pt);
+  registerAutoPlay();
 
   // If we're on some other page, we need to be on POINT
   if (Session.get('page') != SoundAlchemist.view.POINT) {
@@ -105,7 +106,7 @@ SoundAlchemist.view.point.isotopeInit = function() {
 
 
 
-SoundAlchemist.view.point.blaze = function(newPointId) {
+setPointId = function(newPointId) {
   console.log('navigating to ', newPointId);
   _SA.Router.navigate('at/' + newPointId, {trigger: true});
 };

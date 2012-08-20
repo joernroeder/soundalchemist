@@ -33,7 +33,7 @@ Template.controls.events = {
     if ($(ev.target).hasClass('disabled')) {
       console.log('NOAP');
     } else {
-      SoundAlchemist.view.point.blaze(Session.get('player:onwardPoint'));;
+      setPointId(Session.get('player:onwardPoint'));
     }
   },
 
@@ -42,7 +42,7 @@ Template.controls.events = {
     if ($(ev.target).hasClass('disabled')) {
       console.log('NOAP');
     } else {
-      SoundAlchemist.view.point.blaze(Session.get('player:outwardPoint'))
+      setPointId(Session.get('player:outwardPoint'));
     }
   }
 };
