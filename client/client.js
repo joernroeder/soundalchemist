@@ -69,7 +69,7 @@ var setTrackId = function(trackId) {
     Session.set('player:outwardPoint', null);
     Meteor.call('makeTrackRec', trackId, orient);
 
-    registerAutoPlay();
+    registerWidgetHooks();
   }
 };
 
@@ -85,6 +85,26 @@ var orient = function() {
   Session.set('player:outwardPoint', outwardId);
 };
 
-var registerAutoPlay = function() {
+var registerWidgetHooks = function() {
   Meteor.flush();
+  var potentialWidgetEl = $('#playa').get(0);
+  if (!potentialWidgetEl) return;
+
+  var widget = SC.Widget(potentialWidgetEl);
+  widget.bind(SC.Widget.Events.PAUSE, doPause);
+  widget.bind(SC.Widget.Events.FINISH, doAutoPlay);
+};
+
+var doPause = function() {
+  console.log('DEBUG: doing pause...');
+};
+
+var doAutoPlay = function() {
+  console.log('DEBUG: doing auto play...');
+  var trackId = Session.get('player:trackId');
+  var pointId = Session.get("point:id");
+  var pointRec = _SA.PointRecs.findOne({pointId: pointId});
+
+  var nextTrackId = getNextTrack(pointRec, trackId);
+  setTrackId(nextTrackId);
 };

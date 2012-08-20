@@ -100,3 +100,26 @@ var _pokeRecommendations = function(pointId) {
   var cur = Session.get('point:recommendations');
   Session.set('point:recommendations', cur ? cur+1 : 1);
 };
+
+/**
+ * Gets a new track randomly from the recs for the given point, deftly avoiding
+ *  the given trackId.
+ */
+var getNextTrack = function(pointRec, trackId) {
+  var recs = pointRec.recommendations;
+  var totalWeight = _.reduce(recs, function(memo,val) {
+    if (val.trackId == trackId) return memo;
+    return memo + val.intensity;
+  }, 0);
+
+  var remainingRand = Math.random() * totalWeight;
+  var result = _.find(recs, function(rec) {
+    if (rec.trackId == trackId) return false;
+
+    remainingRand -= rec.intensity;
+    if (remainingRand <= 0) return true;
+    return false;
+  });
+
+  return result.trackId;
+};
