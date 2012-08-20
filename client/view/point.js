@@ -57,7 +57,9 @@ var setTrackId = function(trackId) {
     Session.set('player:outwardPoint', null);
     Meteor.call('makeTrackRec', trackId, orient);
 
-    getWidget().load('http://api.soundcloud.com/tracks/' + trackId);
+    getWidget().load('http://api.soundcloud.com/tracks/' + trackId, {
+      callback: function() {getWidget().play();}
+    });
     registerWidgetListeners();
   }
 };
