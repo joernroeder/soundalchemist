@@ -1,15 +1,9 @@
 if (typeof _SA == "undefined") _SA = {};
+_SA.TrackRecs = _SA.TrackRecs || new Meteor.Collection("TrackRecs");
 
 _SA.Points = _SA.Points || new Meteor.Collection("Points");
 // console.log('DEBUG: resetting Points db...');
 // _SA.Points.remove({});
-
-_SA.TrackRecs = _SA.TrackRecs || new Meteor.Collection("TrackRecs");
-// CAUTION: THIS IS EXPENSIVE TO REBUILD!
-// /*
-// console.log('DEBUG: resetting TrackRecs db...');
-// _SA.TrackRecs.remove({});
-// */
 
 var makePoint = function(point, trackId, weight) {
   var trail = point.trail;
