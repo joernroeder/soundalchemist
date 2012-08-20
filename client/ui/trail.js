@@ -5,6 +5,12 @@ Template.trail.list = function () {
   return result;
 };
 
+Template.trail.events = {
+  'click .trail-image': function () {
+    setTrackId(this.trackId);
+  }
+};
+
 Template.trail.outwards = function () {
   return this.weight < 0;
 };

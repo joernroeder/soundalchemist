@@ -2,7 +2,9 @@
   <div class="trail">
     {{#each list}}
       <div class="trail-item">
-        {{> soundcloudImg}}
+        <div class="trail-image">
+          {{> soundcloudImg}}
+        </div>
         <div class="trail-vote">
           {{#if outwards}}
           <img class="trail-step-icon" src="/outwards.png" />
@@ -15,4 +17,5 @@
     <div class="clearfix"></div>
   </div>
 </template>
+
 
