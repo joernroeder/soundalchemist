@@ -16,6 +16,7 @@ Template.recommendation.trackId = function () {
 
 Template.recommendation.events = {
   'click': function () {
-    Session.set('player:trackId', this.trackId);
+    setTrackId(this.trackId);
+    // Session.set('player:trackId', this.trackId);
   }
 };

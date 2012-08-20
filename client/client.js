@@ -10,7 +10,7 @@ Meteor.autosubscribe(function () {
 });
 
 Meteor.autosubscribe(function () {
-  Meteor.subscribe('pointByTrackId', Session.get("home:trackId"));
+  Meteor.subscribe('trackRec', Session.get("player:trackId"));
 });
 
 var _registerTrackData = function(result, opt_callback) {
@@ -58,4 +58,27 @@ var getTrackDataFromUrl = function(soundcloudUrl, opt_callback) {
         _registerTrackData(result, opt_callback);
       }
     });
+};
+
+var setTrackId = function(trackId) {
+  if (trackId != Session.get('player:trackId')) {
+    Session.set('player:trackId', trackId);
+
+    // disorient();
+    Session.set('player:onwardPoint', null);
+    Session.set('player:outwardPoint', null);
+    Meteor.call('makeTrackRec', trackId, orient);
+  }
+};
+
+var orient = function() {
+  var pointId = Session.get('point:id');
+  var trackId = Session.get('player:trackId');
+  var point = _SA.Points.findOne({pointId: pointId});
+
+  var onwardId = makePoint(point, trackId, 1);
+  var outwardId = makePoint(point, trackId, -1);
+
+  Session.set('player:onwardPoint', onwardId);
+  Session.set('player:outwardPoint', outwardId);
 };

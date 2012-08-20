@@ -11,9 +11,34 @@ _SA.TrackRecs = _SA.TrackRecs || new Meteor.Collection("TrackRecs");
 // _SA.TrackRecs.remove({});
 // */
 
-// TODO(gregp): put this better...
-var goog_string_getRandomString = function() {
-  var x = 2147483648;
-  return Math.floor(Math.random() * x).toString(36) +
-    Math.abs(Math.floor(Math.random() * x) ^ (+new Date())).toString(36);
+var makePoint = function(point, trackId, weight) {
+  var trail = point.trail;
+
+  var newPointId = trackId + '_' + weight + '___';
+  newPointId += _.map(trail, function(trailPoint) {
+    return trailPoint.trackId + '_' + trailPoint.weight;
+  }).join('___');
+
+  newPointId = Meteor._srp.SHA256(newPointId);
+  console.log('DEBUG: blazing ', newPointId, trackId, weight);
+
+  // if() // new pointId exists
+
+  var newTrail = _.clone(point.trail);
+  // The current trailPoint to prepend to the trail to make the new point
+  var trailPoint = {
+    pointId: point.pointId,
+    trackId: trackId,
+    weight: weight
+  };
+  newTrail.unshift(trailPoint); // anti-push
+
+  var newPoint = {
+    pointId: newPointId,
+    trackId: trackId,
+    trail: newTrail
+  };
+  console.log('DEBUG: creating newPoint', newPointId, newPoint);
+  _SA.Points.insert(newPoint);
+  return newPointId;
 };

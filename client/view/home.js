@@ -47,8 +47,14 @@ SoundAlchemist.view.home.registerUrlAndStartJourney = function() {
       Session.set('home:ready', false);
       Session.set('home:pending', false);
     }
-    Session.set('home:trackId', trackId);
-    Meteor.call("makeInitialPoint", trackId, function(error, pointId) {
+
+    // Create the point we're going to go to
+    var pointId = makePoint({
+      pointId: null,
+      trail: []
+    }, trackId, 1);
+
+    Meteor.call("makeTrackRec", trackId, function(error) {
       if (error) {throw error;}
       Session.set('point:id', pointId);
 

@@ -14,8 +14,6 @@ SoundAlchemist.view.point = function(pt) {
   if (Session.get('page') != SoundAlchemist.view.POINT) {
     Session.set('page', SoundAlchemist.view.POINT);
 
-    Meteor.autosubscribe(SoundAlchemist.view.point.disorient);
-    Meteor.autosubscribe(SoundAlchemist.view.point.orient);
     Meteor.autosubscribe(SoundAlchemist.view.point.isotopeInit);
   } else {
     console.log('DEBUG: moving to a different point...');
@@ -105,58 +103,6 @@ SoundAlchemist.view.point.isotopeInit = function() {
 };
 
 
-/**
- * Indicates that we're looking in a new direction (playing a new, potentially
- *  unknown track), and need to fetch the onward & outward points relevant to
- *  that direction.
- * TODO(gregp): this should ideally *hide* the onward & outward points
- */
-SoundAlchemist.view.point.disorient = function() {
-  var trackId = Session.get('player:trackId');
-  var pointId = Session.get('point:id');
-
-  if(!trackId) return;
-  Meteor.subscribe('pointByTrackId', trackId);
-  Meteor.call('blazePoint', pointId, trackId, -1);
-  Meteor.call('blazePoint', pointId, trackId, 1);
-
-  Session.set('player:onwardPoint', null);
-  Session.set('player:outwardPoint', null);
-  // console.log('DEBUG: onward/outward disabled pending orientation', pointId, trackId);
-};
-
-/**
- * Indicates that we now have knowledge about the onward & outward points.
- * TODO(gregp): this should ideally cause the onward & outward points to *show*
- */
-SoundAlchemist.view.point.orient = function() {
-  var trackId = Session.get('player:trackId');
-  var pointId = Session.get('point:id');
-
-  var nothing = true;
-  var points = _SA.Points.find({trackId: trackId}).fetch();
-  var onwardPoint = _.find(points, function(point) {
-    return point.trail && point.trail.length && point.trail[0].weight == 1;
-  });
-  if (onwardPoint) {
-    // console.log('DEBUG: onward point found', onwardPoint);
-    Session.set('player:onwardPoint', onwardPoint.pointId);
-    nothing = false;
-  }
-
-  var outwardPoint = _.find(points, function(point) {
-    return point.trail && point.trail.length && point.trail[0].weight == -1;
-  });
-  if (outwardPoint) {
-    // console.log('DEBUG: outward point found', outwardPoint);
-    Session.set('player:outwardPoint', outwardPoint.pointId);
-    nothing = false;
-  }
-
-  if (nothing) {
-    // console.log('DEBUG: points found but non-blaze-relevant', points);
-  }
-};
 
 
 SoundAlchemist.view.point.blaze = function(newPointId) {
