@@ -8,8 +8,12 @@ Template.controls.noOutward = function() {
   return !outwardPt;
 };
 
+Template.controls.playing = function() {
+  return !!Session.get('player:trackId');
+};
+
 Template.controls.ready = function () {
-  return Session.get('player:outwardPoint') !== null;
+  return !!Session.get('player:outwardPoint');
 };
 
 // TODO(avitalo) - we currently don't use these at all.
