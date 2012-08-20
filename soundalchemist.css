@@ -60,6 +60,10 @@
 .trail-vote {
     margin-left: 20%; /* gross but seems to work */
 }
+.trail-image img {
+    width: 100px;
+    height: 100px;
+}
 .trail-step-icon {
     width: 40px;
     height: 40px;
