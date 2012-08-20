@@ -2,13 +2,6 @@ if (typeof _SA == "undefined") _SA = {};
 _SA.PointRecs = _SA.PointRecs || new Meteor.Collection(null);
 _SA.Tracks = _SA.Tracks || new Meteor.Collection(null);
 
-
-Meteor.autosubscribe(function () {
-  var pointId = Session.get("point:id");
-  console.log('DEBUG: subscribing to point id', pointId);
-  Meteor.subscribe('point', pointId);
-});
-
 Meteor.autosubscribe(function () {
   Meteor.subscribe('trackRec', Session.get("player:trackId"));
 });

@@ -1,14 +1,11 @@
 if (typeof _SA == "undefined") _SA = {};
 if (typeof SoundAlchemist == "undefined") SoundAlchemist = {};
 if (typeof SoundAlchemist.view == "undefined") SoundAlchemist.view = {};
-_SA.PointRecs = _SA.PointRecs || new Meteor.Collection(null);
-_SA.Tracks = _SA.Tracks || new Meteor.Collection(null);
-_SA.Points = _SA.Points || new Meteor.Collection("Points");
-_SA.TrackRecs = _SA.TrackRecs || new Meteor.Collection("TrackRecs");
 
 SoundAlchemist.view.POINT = 'point';
 SoundAlchemist.view.point = function(pt) {
   Session.set('point:id', pt);
+
   registerWidgetListeners();
 
   // If we're on some other page, we need to be on POINT
@@ -27,54 +24,9 @@ SoundAlchemist.view.point = function(pt) {
     // Need to wait until the template has actually rendered.
     // TODO(gregp): ewwww
     Meteor.setTimeout(SoundAlchemist.view.point.isotopeInit, 0);
-  } else {
-    SoundAlchemist.view.point._pagePing =
-      Meteor.setInterval(SoundAlchemist.view.point.buildPointRec, 100);
   }
 };
 
-SoundAlchemist.view.point.buildPointRec = function() {
-  var pointId = Session.get("point:id");
-  var point = _SA.Points.findOne({pointId: pointId});
-  if (!point) {
-    // console.log('DEBUG: Couldn\'t find point %s page... still loading...?', pointId);
-    return;
-  } else {
-    Meteor.clearInterval(SoundAlchemist.view.point._pagePing);
-  }
-
-  // Make sure we're not recomputing a recommendation we already have.
-  var pointRec = _SA.PointRecs.findOne({pointId: pointId});
-  if (pointRec) {
-    // console.log('DEBUG: using cached recommendations for ', pointRec);
-    return;
-  }
-
-  // Need to ensure we have TrackRec objects for each point in the trail
-  // Only once we have all of them can we build the recommendations...
-  var pending = 0;
-  // console.log('DEBUG: getting trail recommendations for point', pointId, point);
-  _.each(point.trail, function (trailPoint) {
-    var trailPointId = trailPoint.trackId;
-
-    var trackRecs = _SA.TrackRecs.findOne({trackId: trailPointId});
-    if (trackRecs) {
-      // console.log('DEBUG: using cached track recommendations for point', trackRecs, trailPoint);
-      return;
-    }
-
-    pending++;
-    // console.log('DEBUG: subscribing to trackRec for point', trailPoint);
-    Meteor.subscribe("trackRec", trailPointId, function () {
-      pending--;
-      if (!pending) {
-        computeRecommendations(pointId);
-      }
-    });
-  });
-};
-
-Meteor.autosubscribe(SoundAlchemist.view.point.buildPointRec);
 
 Template.point.isPlaying = function () {
   return !!Session.get('player:trackId');
