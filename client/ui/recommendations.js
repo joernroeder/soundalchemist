@@ -2,6 +2,7 @@ Template.recommendations.list = function () {
   var pointId = Session.get("point:id");
   var pointRec = _SA.PointRecs.findOne({pointId: pointId});
   if (!pointRec) return [];
+  console.log('DEBUG: rendering pointRec for', pointId, pointRec);
   return pointRec.recommendations;
 };
 
@@ -17,6 +18,5 @@ Template.recommendation.trackId = function () {
 Template.recommendation.events = {
   'click': function () {
     setTrackId(this.trackId);
-    // Session.set('player:trackId', this.trackId);
   }
 };

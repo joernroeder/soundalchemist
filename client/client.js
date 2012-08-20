@@ -3,7 +3,11 @@ _SA.PointRecs = _SA.PointRecs || new Meteor.Collection(null);
 _SA.Tracks = _SA.Tracks || new Meteor.Collection(null);
 
 Meteor.autosubscribe(function () {
-  Meteor.subscribe('trackRec', Session.get("player:trackId"));
+  var curTrackId = Session.get("player:trackId");
+  if (!curTrackId) return;
+
+  console.log('DEBUG: subscribing to trackRec for current track', curTrackId);
+  Meteor.subscribe('trackRec', curTrackId);
 });
 
 var _registerTrackData = function(result, opt_callback) {

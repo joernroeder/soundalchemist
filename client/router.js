@@ -4,7 +4,8 @@ if (typeof SoundAlchemist == "undefined") SoundAlchemist = {};
 SoundAlchemist.Router = Backbone.Router.extend({
   routes: {
     "": "default",
-    "at/:point": "point"
+    "at/:point": "point",
+    "at/:point/": "point"
   },
 
   // default -- Show home page.

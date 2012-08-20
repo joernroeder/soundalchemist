@@ -45,6 +45,7 @@ SoundAlchemist.view.point.isotopeInit = function() {
 var setPointId = function(newPointId) {
   console.log('navigating to ', newPointId);
   _SA.Router.navigate('at/' + newPointId, {trigger: true});
+  console.log('navigated to ', newPointId);
 };
 
 
@@ -69,6 +70,7 @@ var orient = function() {
   var trackId = Session.get('player:trackId');
   var point = _SA.Points.findOne({pointId: pointId});
 
+  console.log('DEBUG: making points', pointId, trackId, point);
   var onwardId = makePoint(point, trackId, 1);
   var outwardId = makePoint(point, trackId, -1);
 

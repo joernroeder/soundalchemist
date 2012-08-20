@@ -10,11 +10,12 @@ _SA.MAX_RECOMMENDATIONS = 30;
 _SA.getPointRec = function (callback) {
   var pointId = Session.get("point:id");
   var point = _SA.Points.findOne({pointId: pointId});
+  console.log('DEBUG: getting pointRec', pointId, point);
 
   // Make sure we're not recomputing a recommendation we already have.
   var pointRec = _SA.PointRecs.findOne({pointId: pointId});
   if (pointRec) {
-    console.log('DEBUG: using cached recommendations for ', pointRec);
+    console.log('DEBUG: using cached pointRec', pointRec);
     callback();
     return;
   }
@@ -22,26 +23,40 @@ _SA.getPointRec = function (callback) {
   // Need to ensure we have TrackRec objects for each point in the trail
   // Only once we have all of them can we build the recommendations...
   var pending = 0;
-  // console.log('DEBUG: getting trail recommendations for point', pointId, point);
+  console.log('DEBUG: getting trackRecs for trail points', pointId, point);
   _.each(point.trail, function (trailPoint) {
     var trailPointId = trailPoint.trackId;
 
     var trackRecs = _SA.TrackRecs.findOne({trackId: trailPointId});
     if (trackRecs) {
-      // console.log('DEBUG: using cached track recommendations for point', trackRecs, trailPoint);
+      console.log('DEBUG: using cached trackRecs for point', trackRecs, trailPoint);
       return;
     }
 
+    // This block is only used by page load
+    // ...
+    // TODO(gregp): other than this bug: we should know that the result of the
+    //  server Meteor.call (which we subscribed to) will be returned to us
+    //    *before*
+    //  the callback for that Meteor.call is called
     pending++;
-    // console.log('DEBUG: subscribing to trackRec for point', trailPoint);
+    console.log('DEBUG: subscribing to trackRec', trailPointId);
     Meteor.subscribe("trackRec", trailPointId, function () {
+      console.log('DEBUG: got trackRec', trailPointId);
       pending--;
       if (!pending) {
+        console.log('DEBUG: got all trail trackRecs for', pointId);
         computePointRec(pointId);
         callback();
       }
     });
   });
+
+  if(pending === 0) {
+    console.log('DEBUG: had all trail trackRecs cached for', pointId);
+    computePointRec(pointId);
+    callback();
+  }
 };
 
 Meteor.autosubscribe(function () {
@@ -65,7 +80,7 @@ Meteor.autosubscribe(function () {
 var computePointRec = function(pointId) {
   var point = _SA.Points.findOne({pointId: pointId});
 
-  // console.log('DEBUG: computing recommendations for point', point);
+  console.log('DEBUG: computing pointRecs for', pointId, point);
   if (!point) {
     console.warn("There's no point!");
     return;
