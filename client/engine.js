@@ -7,22 +7,15 @@ _SA.TrackRecs = _SA.TrackRecs || new Meteor.Collection("TrackRecs");
 // TODO(gregp): infinite scroll..... ...
 _SA.MAX_RECOMMENDATIONS = 30;
 
-Meteor.autosubscribe(function () {
-  var pointId = Session.get("point:id");
-  if (pointId) {
-    console.log('DEBUG: subscribing to point id', pointId);
-    Meteor.subscribe('point', pointId, buildPointRec);
-  }
-});
-
-buildPointRec = function() {
+_SA.getPointRec = function (callback) {
   var pointId = Session.get("point:id");
   var point = _SA.Points.findOne({pointId: pointId});
 
   // Make sure we're not recomputing a recommendation we already have.
   var pointRec = _SA.PointRecs.findOne({pointId: pointId});
   if (pointRec) {
-    // console.log('DEBUG: using cached recommendations for ', pointRec);
+    console.log('DEBUG: using cached recommendations for ', pointRec);
+    callback();
     return;
   }
 
@@ -44,11 +37,22 @@ buildPointRec = function() {
     Meteor.subscribe("trackRec", trailPointId, function () {
       pending--;
       if (!pending) {
-        computeRecommendations(pointId);
+        computePointRec(pointId);
+        callback();
       }
     });
   });
 };
+
+Meteor.autosubscribe(function () {
+  var pointId = Session.get("point:id");
+  if (pointId) {
+    console.log('DEBUG: subscribing to point id', pointId);
+    Meteor.subscribe('point', pointId, function() {
+      _SA.getPointRec(SoundAlchemist.view.point.isotopeInit);
+    });
+  }
+});
 
 /**
  * This function should be autosubscribed in such a way that it is called when
@@ -58,7 +62,7 @@ buildPointRec = function() {
  *  given point.
  * This can cause the recommendations UI to update with the new pointRec.
  */
-var computeRecommendations = function(pointId) {
+var computePointRec = function(pointId) {
   var point = _SA.Points.findOne({pointId: pointId});
 
   // console.log('DEBUG: computing recommendations for point', point);
@@ -122,9 +126,6 @@ var computeRecommendations = function(pointId) {
     pointId: pointId,
     recommendations: results
   });
-
-  // TODO(gregp): react to the PointRecs Collection
-  _pokeRecommendations(pointId);
 };
 
 // Generally, get 100.0 / the biggest relevant result
@@ -138,13 +139,6 @@ var _getScaleFactor = function(sortedResultsArray) {
   // if (sortedResultsArray.length < _SA.MAX_RECOMMENDATIONS) {
     return 100.0 / sortedResultsArray[1][1];
   // }
-};
-
-var _pokeRecommendations = function(pointId) {
-  Session.set('point:recommendationsOK+' + pointId, true);
-
-  var cur = Session.get('point:recommendations');
-  Session.set('point:recommendations', cur ? cur+1 : 1);
 };
 
 /**
