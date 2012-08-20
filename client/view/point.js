@@ -9,7 +9,7 @@ _SA.TrackRecs = _SA.TrackRecs || new Meteor.Collection("TrackRecs");
 SoundAlchemist.view.POINT = 'point';
 SoundAlchemist.view.point = function(pt) {
   Session.set('point:id', pt);
-  registerWidgetHooks();
+  registerWidgetListeners();
 
   // If we're on some other page, we need to be on POINT
   if (Session.get('page') != SoundAlchemist.view.POINT) {

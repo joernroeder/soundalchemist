@@ -69,7 +69,7 @@ var setTrackId = function(trackId) {
     Session.set('player:outwardPoint', null);
     Meteor.call('makeTrackRec', trackId, orient);
 
-    registerWidgetHooks();
+    registerWidgetListeners();
   }
 };
 
@@ -85,14 +85,25 @@ var orient = function() {
   Session.set('player:outwardPoint', outwardId);
 };
 
-var registerWidgetHooks = function() {
+var registerWidgetListeners = function() {
+  // Make sure the dom is rendered
   Meteor.flush();
   var potentialWidgetEl = $('#playa').get(0);
-  if (!potentialWidgetEl) return;
+  if (!potentialWidgetEl) {
+    console.warn('couldn\'t find soundcloud player');
+    return;
+  } else {
+    console.log('found soundcloud player', potentialWidgetEl);
+  }
 
   var widget = SC.Widget(potentialWidgetEl);
+  // widget.unbind(SC.Widget.Events.PAUSE);
   widget.bind(SC.Widget.Events.PAUSE, doPause);
+  console.log('bound PAUSE', widget);
+
+  widget.unbind(SC.Widget.Events.FINISH);
   widget.bind(SC.Widget.Events.FINISH, doAutoPlay);
+  console.log('bound FINISH', widget);
 };
 
 var doPause = function() {
