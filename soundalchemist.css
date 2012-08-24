@@ -48,7 +48,8 @@
 }
 .trail {
   clear: both;
-  height: 150px;
+  overflow-x: hidden;
+  height: 147px;
 }
 .trail-vote {
     margin-left: 34%; /* gross but seems to work */

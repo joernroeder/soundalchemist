@@ -95,7 +95,7 @@ var computePointRec = function(pointId) {
   //  at the given point, calculated by adding the number of shared favoriters
   //  of the current and trail tracks, multiplied by the weight of the trail //  track.
   var intensity = {};
-  _.each(point.trail, function (trailPoint) {
+  _.each(point.trail, function (trailPoint, index) {
     var weight = trailPoint.weight;
     var trackRec = _SA.TrackRecs.findOne({trackId: trailPoint.trackId});
     // console.log('DEBUG: trackRec found', trackRec);
@@ -108,7 +108,7 @@ var computePointRec = function(pointId) {
         // We have not seen this point before
         intensity[trackId] = 0;
       }
-      intensity[trackId] += count * weight;
+      intensity[trackId] += count * weight * Math.pow(0.9, index);
     });
   });
 
