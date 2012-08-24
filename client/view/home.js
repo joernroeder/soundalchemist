@@ -27,7 +27,7 @@ SoundAlchemist.view.home.startJourney = function() {
 
 // Validate the url
 SoundAlchemist.view.home.validateUrl = function(url) {
-  var regex = /^((http:\/\/){0,1})(soundcloud.com|www.soundcloud.com)([0-9a-zA-Z./_-]+)$/gi;
+  var regex = /^((http:\/\/)?)(soundcloud.com|www.soundcloud.com)([0-9a-zA-Z./_-]+)$/gi;
   var validUrl = regex.test(url);
   Session.set('home:badUrl', !validUrl);
   return validUrl;
@@ -39,6 +39,9 @@ SoundAlchemist.view.home.registerUrlAndStartJourney = function() {
   Session.set('home:pending', true);
 
   soundcloudUrl = Session.get('home:url');
+  if (soundcloudUrl.indexOf('http://') === -1) {
+    soundcloudUrl = 'http://' + soundcloudUrl;
+  }
 
   // Get a head start on the recommendations
   console.log('DEBUG: getting track data from url ', soundcloudUrl);
