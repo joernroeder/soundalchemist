@@ -59,7 +59,7 @@ var setTrackId = function(trackId) {
     Meteor.call('makeTrackRec', trackId, orient);
 
     getWidget().load('http://api.soundcloud.com/tracks/' + trackId, {
-      callback: function() {getWidget().play();}
+      auto_play: isProd(), // thank you greg
     });
     registerWidgetListeners();
   }

@@ -2,6 +2,10 @@ if (typeof _SA == "undefined") _SA = {};
 _SA.PointRecs = _SA.PointRecs || new Meteor.Collection(null);
 _SA.Tracks = _SA.Tracks || new Meteor.Collection(null);
 
+isProd = function () {
+  return window.location.host.indexOf('.meteor.com') !== -1;
+};
+
 Meteor.autosubscribe(function () {
   var curTrackId = Session.get("player:trackId");
   if (!curTrackId) return;

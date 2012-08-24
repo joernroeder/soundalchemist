@@ -42,6 +42,10 @@ Template.controls.events = {
     setPointId(Session.get('player:onwardPoint'));
   },
 
+  'click .skip-button': function() {
+    doAutoPlay();
+  },
+
   'click .outwards-button': function (ev) {
     ev.preventDefault();
     setPointId(Session.get('player:outwardPoint'));

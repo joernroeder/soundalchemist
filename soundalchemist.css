@@ -73,7 +73,7 @@
     right: 100px;
 }
 .controls {
-    margin-top: 24px;
+    margin-top: 15px;
     margin-left: 25px;
 }
 .controls-container {
@@ -96,7 +96,7 @@ input.inwards-button {
     height: 50px;
     padding-left: 50px;     /* make text start to the right of the image */
     vertical-align: middle; /* align the text vertically centered */
-    margin-bottom: 18px;
+/*    margin-bottom: 18px;*/
 }
 input.outwards-button {
     background-image: url(/outwards50.png);
@@ -107,4 +107,8 @@ input.outwards-button {
     height: 50px;
     padding-left: 50px;     /* make text start to the right of the image */
     vertical-align: middle; /* align the text vertically centered */
+}
+input.skip-button {
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
