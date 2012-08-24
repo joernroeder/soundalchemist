@@ -10,7 +10,6 @@ SoundAlchemist.view.point = function(pt) {
   // If we're on some other page, we need to be on POINT
   if (Session.get('page') != SoundAlchemist.view.POINT) {
     Session.set('page', SoundAlchemist.view.POINT);
-    doAutoPlay();
   } else {
     console.log('DEBUG: moving to a different point...');
   }
@@ -65,6 +64,19 @@ var setTrackId = function(trackId) {
     registerWidgetListeners();
   }
 };
+
+Meteor.startup(function () {
+  var trackId = Session.get('player:trackId');
+  if (!trackId) {
+    return;
+  }
+
+  Meteor.flush();
+  getWidget().load('http://api.soundcloud.com/tracks/' + trackId, {
+    auto_play: isProd(), // thank you greg
+  });
+  registerWidgetListeners();
+});
 
 var orient = function() {
   var pointId = Session.get('point:id');
