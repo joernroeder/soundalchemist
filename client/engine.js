@@ -5,7 +5,7 @@ _SA.Points = _SA.Points || new Meteor.Collection("Points");
 _SA.TrackRecs = _SA.TrackRecs || new Meteor.Collection("TrackRecs");
 
 // TODO(gregp): infinite scroll..... ...
-_SA.MAX_RECOMMENDATIONS = 30;
+_SA.MAX_RECOMMENDATIONS = 50;
 
 _SA.getPointRec = function (callback) {
   var pointId = Session.get("point:id");

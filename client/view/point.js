@@ -34,8 +34,8 @@ SoundAlchemist.view.point.isotopeInit = function() {
       queue: false
     },
     masonry: {
-      columnWidth: 110,
-      gutterWidth: 10
+      columnWidth: 56,
+      gutterWidth: 6
     },
     animationEngine: 'jquery' // TODO(gregp): use css3 transitions
   });
