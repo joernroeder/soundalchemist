@@ -59,7 +59,7 @@ var setTrackId = function(trackId) {
     Meteor.call('makeTrackRec', trackId, orient);
 
     getWidget().load('http://api.soundcloud.com/tracks/' + trackId, {
-      auto_play: isProd(), // thank you greg
+      auto_play: isProd()
     });
     registerWidgetListeners();
   }
@@ -72,9 +72,15 @@ Meteor.startup(function () {
   }
 
   Meteor.flush();
-  getWidget().load('http://api.soundcloud.com/tracks/' + trackId, {
-    auto_play: isProd(), // thank you greg
+  var widget = getWidget();
+  widget.load('http://api.soundcloud.com/tracks/' + trackId, {
+    callback: function () {
+      // FUCKING WHY DOESN'T THIS ALWAYS WORK
+      widget.seekTo(Session.get("player:time") || 0);
+      widget.play();
+    }
   });
+
   registerWidgetListeners();
 });
 
@@ -113,6 +119,16 @@ var registerWidgetListeners = function() {
   widget.unbind(SC.Widget.Events.FINISH);
   widget.bind(SC.Widget.Events.FINISH, doAutoPlay);
   // console.log('bound FINISH', widget);
+
+  Meteor.setInterval(function () {
+    widget.isPaused(function(paused) {
+      if (!paused) {
+        widget.getPosition(function(time) {
+          Session.set("player:time", time);
+        });
+      }
+    });
+  }, 1000);
 };
 
 var doPause = function() {
