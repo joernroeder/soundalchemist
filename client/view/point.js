@@ -10,6 +10,7 @@ SoundAlchemist.view.point = function(pt) {
   // If we're on some other page, we need to be on POINT
   if (Session.get('page') != SoundAlchemist.view.POINT) {
     Session.set('page', SoundAlchemist.view.POINT);
+    doAutoPlay();
   } else {
     console.log('DEBUG: moving to a different point...');
   }

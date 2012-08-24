@@ -64,7 +64,12 @@ Meteor.autosubscribe(function () {
   if (pointId) {
     console.log('DEBUG: subscribing to point id', pointId);
     Meteor.subscribe('point', pointId, function() {
-      _SA.getPointRec(SoundAlchemist.view.point.isotopeInit);
+      _SA.getPointRec(function () {
+        if (!Session.get('player:trackId')) {
+          doAutoPlay();
+        }
+        SoundAlchemist.view.point.isotopeInit();
+      });
     });
   }
 });
