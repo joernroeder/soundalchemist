@@ -85,13 +85,13 @@ Meteor.methods({
         var userFavorites = _SA.UserFavorites.findOne({userId: favoriterId});
         if(!userFavorites) {
           // console.log('DEBUG: Making request for %d\'s favorites...', favoriterId);
-          Meteor.http.get(
+          var soundcloudFavorites = Meteor.http.get(
             "http://api.soundcloud.com/users/" + favoriterId +
               "/favorites.json" +
               "?limit=" + limit +
               "&duration[from]=1200000" +
-              "&client_id=17a48e602c9a59c5a713b456b60fea68",
-            userFavoritesReceived);
+              "&client_id=17a48e602c9a59c5a713b456b60fea68");
+          userFavoritesReceived(null, soundcloudFavorites);
         } else {
           // console.log('DEBUG: Cached %d\'s favorites...', favoriterId);
           relativityFromFavorites(userFavorites);
