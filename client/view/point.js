@@ -16,7 +16,7 @@ SoundAlchemist.view.point = function(pt) {
 };
 SoundAlchemist.view.pointTrack = function(pt, track) {
   SoundAlchemist.view.point(pt);
-  Session.set('player:trackId', track);
+  setTrackId(track);
 };
 
 
@@ -66,6 +66,7 @@ var setTrackId = function(trackId) {
       auto_play: isProd(), // thank you greg
     });
     registerWidgetListeners();
+    Session.set('player:trackId', trackId);
   }
 };
 
@@ -82,10 +83,17 @@ Meteor.startup(function () {
   registerWidgetListeners();
 });
 
-var orient = function() {
+var orient = function(insideAutorun) {
   var pointId = Session.get('point:id');
   var trackId = Session.get('player:trackId');
   var point = _SA.Points.findOne({pointId: pointId});
+  if (!point) {
+    Meteor.autorun(function () {
+      if (_SA.Points.findOne({pointId: pointId}))
+        orient(true);
+    });
+    return;
+  }
 
   console.log('DEBUG: making points', pointId, trackId, point);
   var onwardId = makePoint(point, trackId, 1);
