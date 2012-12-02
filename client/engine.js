@@ -195,7 +195,8 @@ var getNextTrack = function(pointRec, trackId) {
     return memo + val.intensity;
   }, 0);
 
-  var remainingRand = Math.random() * totalWeight;
+  var fakeRandom = parseInt(Meteor._srp.SHA256(trackId + "/" + totalWeight).substring(0, 4), 16) / 65536;
+  var remainingRand = fakeRandom * totalWeight;
   var result = _.find(recs, function(rec) {
     if (rec.trackId == trackId) return false;
 
