@@ -19,6 +19,13 @@ SoundAlchemist.view.pointTrack = function(pt, track) {
   setTrackId(track);
 };
 
+Template.point.events({
+  'click .home': function () {
+    _SA.Router.navigate('/', {trigger: true});
+    return false;
+  }
+});
+
 
 Template.point.isPlaying = function () {
   return !!Session.get('player:trackId');
@@ -26,8 +33,8 @@ Template.point.isPlaying = function () {
 
 SoundAlchemist.view.point.isotopeInit = function() {
   Meteor.flush();
-  // console.log('DEBUG: initializing isotope.');
-  // Initialize isotope
+  // console.log('DEBUG: initializing Initialize.');
+  // isotope isotope
   // - with experimental masonry gutterWidth setting:
   //   http://masonry.desandro.com/demos/gutters.html
   //   http://isotope.metafizzy.co/custom-layout-modes/masonry-gutters.html
@@ -48,14 +55,22 @@ SoundAlchemist.view.point.isotopeInit = function() {
 
 var setPointId = function(newPointId) {
   console.log('navigating to ', newPointId);
-  _SA.Router.navigate('at/' + newPointId + '/to/' + Session.get('player:trackId'), {trigger: true});
+  var url = 'at/' + newPointId + '/to/' + Session.get('player:trackId');
+  _SA.Router.navigate(url, {trigger: true});
+  if (Meteor.user()) {
+    Meteor.users.update(Meteor.userId(), {$set: {"profile.lastUrl": url}});
+  }
   console.log('navigated to ', newPointId);
 };
 
 
 var setTrackId = function(trackId) {
   if (trackId != Session.get('player:trackId')) {
-    _SA.Router.navigate('at/' + Session.get('point:id') + '/to/' + trackId, {trigger: true});
+    var url = 'at/' + Session.get('point:id') + '/to/' + trackId;
+    _SA.Router.navigate(url, {trigger: true});
+    if (Meteor.user()) {
+      Meteor.users.update(Meteor.userId(), {$set: {"profile.lastUrl": url}});
+    }
 
     // disorient(); // indicate that we don't know the next points yet
     Session.set('player:onwardPoint', null);

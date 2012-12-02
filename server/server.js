@@ -1,3 +1,9 @@
+Meteor.users.allow({
+  update: function(userId, docs) {
+    return docs.length === 1 && docs[0]._id === userId;
+  }
+});
+
 var Future = __meteor_bootstrap__.require('fibers/future');
 
 var Fiber = __meteor_bootstrap__.require('fibers');

@@ -23,6 +23,10 @@ SoundAlchemist.view.home.startJourney = function() {
   console.log('Starting journey from ' + pointId + ' at ' + url);
   // TODO(gregp): specify at/_point_/to/_trackId_
   _SA.Router.navigate('at/' + pointId, {trigger: true});
+  if (Meteor.user()) {
+    Meteor.users.update(Meteor.userId(), {$set: {"profile.lastUrl": 'at/' + pointId}});
+  }
+
 };
 
 // Validate the url

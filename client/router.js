@@ -15,9 +15,15 @@ SoundAlchemist.Router = Backbone.Router.extend({
     SoundAlchemist.view.home();
   },
   point: function(point) {
+    if (Meteor.user()) {
+      Meteor.users.update(Meteor.userId(), {$set: {"profile.lastUrl": "at/" + point}});
+    }
     SoundAlchemist.view.point(point);
   },
   pointTrack: function(point, track) {
+    if (Meteor.user()) {
+      Meteor.users.update(Meteor.userId(), {$set: {"profile.lastUrl": "at/" + point + "/to/" + track}});
+    }
     SoundAlchemist.view.pointTrack(point, track);
   }
 });
