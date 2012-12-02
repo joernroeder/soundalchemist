@@ -8,6 +8,21 @@ Template.trail.list = function () {
 Template.trail.events = {
   'click .trail-image': function () {
     setTrackId(this.trackId);
+  },
+
+  'click .trail-vote': function () {
+    var self = this;
+    var i = -1;
+    // xcxc why do we need this work?
+    _.find(Template.trail.list(), function (trailItem, index) {
+      if (trailItem.pointId === self.pointId) {
+        i = index - 1;
+        return true;
+      } else {
+        return false;
+      }
+    });
+    setPointId(Template.trail.list()[i].pointId);
   }
 };
 
