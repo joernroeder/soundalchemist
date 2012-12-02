@@ -1,19 +1,36 @@
+var Future = __meteor_bootstrap__.require('fibers/future');
+
+var Fiber = __meteor_bootstrap__.require('fibers');
+
+function sleep(ms) {
+    var fiber = Fiber.current;
+    setTimeout(function() {
+        fiber.run();
+    }, ms);
+    Fiber.yield();
+}
+
+
 if (typeof _SA == "undefined") _SA = {};
 
 console.log('restarting server...');
 
 _SA.UserFavorites = new Meteor.Collection("UserFavorites");
 
-Meteor.publish("point", function (pointId) {
-  return _SA.Points.find({pointId: pointId});
-});
-
 Meteor.publish("trackRec", function (trackId) {
   // console.log('DEBUG: looking for trackRec for ', trackId);
   return _SA.TrackRecs.find({trackId: trackId});
 });
 
+var limit = isProd() ? 200 : 5;
+
 Meteor.methods({
+  getPoint: function(pointId) {
+    return _SA.Points.findOne({pointId: pointId});
+  },
+  addPoint: function(point) {
+    _SA.Points.insert(point);
+  },
   makeTrackRec: function (trackId) {
     if (!_SA.TrackRecs.findOne({trackId: trackId})){
       // xcxc mark it as loading-in-progress immediately.
@@ -25,7 +42,7 @@ Meteor.methods({
       var favoriters = trackRec.favoriters = Meteor.http.get(
         "http://api.soundcloud.com/tracks/" + trackId +
           "/favoriters.json" +
-          "?limit=200" +
+          "?limit=" + limit +
           "&client_id=17a48e602c9a59c5a713b456b60fea68").data;
       // console.log('DEBUG: Got response for favoriters of %s', trackId);
 
@@ -71,7 +88,7 @@ Meteor.methods({
           Meteor.http.get(
             "http://api.soundcloud.com/users/" + favoriterId +
               "/favorites.json" +
-              "?limit=200" +
+              "?limit=" + limit +
               "&duration[from]=1200000" +
               "&client_id=17a48e602c9a59c5a713b456b60fea68",
             userFavoritesReceived);

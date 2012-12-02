@@ -25,4 +25,4 @@ _SA.MOCK.SOUNDCLOUD_URLS = [
 _SA.MOCK.DEFAULT_URL = _SA.MOCK.SOUNDCLOUD_URLS[
   Math.floor(Math.random() * _SA.MOCK.SOUNDCLOUD_URLS.length)
 ];
-Session.set('home:defaultUrl', _SA.MOCK.DEFAULT_URL);
+//Session.set('home:defaultUrl', _SA.MOCK.DEFAULT_URL);

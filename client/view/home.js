@@ -79,42 +79,13 @@ keyCodes = {
 
 ////////////////// URL Input Field ////////////////////////
 SoundAlchemist.view.home.onUrlKeydown = function(ev) {
-  var input = $(ev.target);
-  // If escape, make sure the user remembers to add the http
-  if (ev.keyCode == keyCodes.ESCAPE) {
-    input.val(Session.get('home:defaultUrl'));
-    Session.set('home:badUrl', false);
-    return;
-  }
-
-  // Otherwise, run our validation
-  var urlVal = input.val();
-  if (!SoundAlchemist.view.home.validateUrl(urlVal)) {
-    return;
-  }
-  Session.set('home:url', urlVal);
-
   // Maybe even start them from here
   if (ev.keyCode == keyCodes.ENTER) {
+    if (!SoundAlchemist.view.home.validateUrl(Session.get('home:url'))) {
+      return;
+    }
     SoundAlchemist.view.home.registerUrlAndStartJourney();
   }
-};
-
-// Clear the field so pasting is easier
-SoundAlchemist.view.home.onUrlClick = function(ev) {
-  var input = $(ev.target);
-  if (input.val() === Session.get('home:defaultUrl')) {
-    input.val('');
-  }
-  SoundAlchemist.view.home.validateUrl(input.val());
-};
-
-SoundAlchemist.view.home.onUrlBlur = function(ev) {
-  var input = $(ev.target);
-  if (input.val() === "") {
-    input.val(Session.get('home:defaultUrl'));
-  }
-  SoundAlchemist.view.home.validateUrl(input.val());
 };
 
 SoundAlchemist.view.home.onPaste = function(ev) {
@@ -157,8 +128,6 @@ Template.home.badUrl = function() {
 Template.home.events = {
   'keydown #soundcloud-url': SoundAlchemist.view.home.onUrlKeydown,
   'paste #soundcloud-url': SoundAlchemist.view.home.onPaste,
-  'focusout #soundcloud-url': SoundAlchemist.view.home.onUrlBlur,
-  'click #soundcloud-url': SoundAlchemist.view.home.onUrlClick,
   'click #start-journey': SoundAlchemist.view.home.onStartClick
 };
 

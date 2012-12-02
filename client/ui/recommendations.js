@@ -1,3 +1,7 @@
+Template.recommendations.rendered = function () {
+  console.log('xcxc recommendations rendered: ', new Date);
+};
+
 Template.recommendations.list = function () {
   var pointId = Session.get("point:id");
   var pointRec = _SA.PointRecs.findOne({pointId: pointId});
