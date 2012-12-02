@@ -14,6 +14,10 @@ SoundAlchemist.view.point = function(pt) {
     console.log('DEBUG: moving to a different point...');
   }
 };
+SoundAlchemist.view.pointTrack = function(pt, track) {
+  SoundAlchemist.view.point(pt);
+  Session.set('player:trackId', track);
+};
 
 
 Template.point.isPlaying = function () {
@@ -44,14 +48,14 @@ SoundAlchemist.view.point.isotopeInit = function() {
 
 var setPointId = function(newPointId) {
   console.log('navigating to ', newPointId);
-  _SA.Router.navigate('at/' + newPointId, {trigger: true});
+  _SA.Router.navigate('at/' + newPointId + '/to/' + Session.get('player:trackId'), {trigger: true});
   console.log('navigated to ', newPointId);
 };
 
 
 var setTrackId = function(trackId) {
   if (trackId != Session.get('player:trackId')) {
-    Session.set('player:trackId', trackId);
+    _SA.Router.navigate('at/' + Session.get('point:id') + '/to/' + trackId, {trigger: true});
 
     // disorient(); // indicate that we don't know the next points yet
     Session.set('player:onwardPoint', null);

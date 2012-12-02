@@ -5,7 +5,9 @@ SoundAlchemist.Router = Backbone.Router.extend({
   routes: {
     "": "default",
     "at/:point": "point",
-    "at/:point/": "point"
+    "at/:point/": "point",
+    "at/:point/to/:track": "pointTrack",
+    "at/:point/to/:track/": "pointTrack"
   },
 
   // default -- Show home page.
@@ -14,6 +16,9 @@ SoundAlchemist.Router = Backbone.Router.extend({
   },
   point: function(point) {
     SoundAlchemist.view.point(point);
+  },
+  pointTrack: function(point, track) {
+    SoundAlchemist.view.pointTrack(point, track);
   }
 });
 
