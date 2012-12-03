@@ -1,8 +1,12 @@
 <template name="home">
-  <input id="soundcloud-url" value="{{defaultUrl}}" />
-  {{#if badUrl}}bad url{{/if}}
-  <button id="start-journey" {{#if notReady}}disabled="disabled"{{/if}}>
-    Start journey
-  </button>
-  {{#if pending}}Preparing vehicle...{{/if}}
+  {{#if resuming}}
+    Loading last point...
+  {{else}}
+    <input id="soundcloud-url" value="{{defaultUrl}}" />
+    {{#if badUrl}}bad url{{/if}}
+    <button id="start-journey" {{#if notReady}}disabled="disabled"{{/if}}>
+      Start journey
+    </button>
+    {{#if pending}}Preparing vehicle...{{/if}}
+  {{/if}}
 </template>

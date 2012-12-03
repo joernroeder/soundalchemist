@@ -1,6 +1,10 @@
 if (typeof SoundAlchemist == "undefined") SoundAlchemist = {};
 if (typeof SoundAlchemist.view == "undefined") SoundAlchemist.view = {};
 
+Template.home.resuming = function () {
+  return Meteor.userId() && Meteor.loggingIn();
+};
+
 SoundAlchemist.view.HOME = 'home';
 SoundAlchemist.view.home = function() {
   Session.set('page', SoundAlchemist.view.HOME);
@@ -42,6 +46,8 @@ SoundAlchemist.view.home.registerUrlAndStartJourney = function() {
   Session.set('home:ready', false);
   Session.set('home:pending', true);
 
+  // xcxc eliminate home:url?
+  Session.set('home:url', document.getElementById('soundcloud-url').value);
   soundcloudUrl = Session.get('home:url');
   if (soundcloudUrl.indexOf('http://') === -1) {
     soundcloudUrl = 'http://' + soundcloudUrl;
@@ -53,6 +59,8 @@ SoundAlchemist.view.home.registerUrlAndStartJourney = function() {
     if (error) {
       Session.set('home:ready', false);
       Session.set('home:pending', false);
+      console.log(error);
+      return;
     }
 
     // Create the point we're going to go to
@@ -88,7 +96,7 @@ SoundAlchemist.view.home.onUrlKeydown = function(ev) {
     if (!SoundAlchemist.view.home.validateUrl(Session.get('home:url'))) {
       return;
     }
-    SoundAlchemist.view.home.registerUrlAndStartJourney();
+    SoundAlchemist.view.home.registerUrlAndStartJourney.bind(this)();
   }
 };
 
@@ -101,6 +109,7 @@ SoundAlchemist.view.home.onPaste = function(ev) {
 
   if (SoundAlchemist.view.home.validateUrl(pastedText)) {
       Session.set('home:url', pastedText);
+    // xcxc eliminate home:url?
   }
 };
 

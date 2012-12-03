@@ -1,3 +1,6 @@
+_SA.Points._ensureIndex('pointId', {sparse: 1});
+_SA.TrackRecs._ensureIndex('trackId', {sparse: 1});
+
 Meteor.users.allow({
   update: function(userId, docs) {
     return docs.length === 1 && docs[0]._id === userId;
@@ -22,6 +25,7 @@ if (typeof _SA == "undefined") _SA = {};
 console.log('restarting server...');
 
 _SA.UserFavorites = new Meteor.Collection("UserFavorites");
+_SA.UserFavorites._ensureIndex('userId', {sparse: 1});
 
 Meteor.publish("trackRec", function (trackId) {
   // console.log('DEBUG: looking for trackRec for ', trackId);

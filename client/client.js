@@ -11,7 +11,8 @@ Meteor.autosubscribe(function () {
 });
 
 var _registerTrackData = function(result, opt_callback) {
-  var trackData = result.data;
+  // xcxc!!!!! on firefox .data is not populated; and probably also android
+  var trackData = result.data || JSON.parse(result.content);
   var id = trackData.id;
   trackData.lastUpdate = +new Date();
 
@@ -46,6 +47,7 @@ var getTrackDataById = function(soundcloudId, opt_callback) {
 };
 
 var getTrackDataFromUrl = function(soundcloudUrl, opt_callback) {
+  console.log('sdbsdg');
   Meteor.http.get(
     _soundcloudApiUrl("resolve.json?url=" + soundcloudUrl),
     function (error, result) {
