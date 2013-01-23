@@ -1,0 +1,111 @@
+
+/* ==========================================================================
+   Home-View
+   ========================================================================== */
+
+@inputWidth: 570px;
+
+.is-home {
+	display: table;
+	table-layout: fixed;
+	width: 100%;
+	height: 100%;
+}
+
+.home {
+	width			: 100%;
+	height			: 100%;
+	display			: table-cell;
+	vertical-align	: middle;
+}
+
+.centered {
+	max-width: 800px;
+	margin: 0 auto;
+	overflow: hidden;
+
+	p {
+		@color: lighten(@bgColor, 20%);
+		// typo
+		.sc-font-light();
+		font-size: 14px;
+		color: @color;
+
+		// box
+		width: @inputWidth;
+		text-align: right;
+		clear: left;
+		padding-top: 10px;
+
+		a {
+			color: @color;
+			text-decoration: underline;
+
+			&:hover,
+			&:focus {
+				color: #fff;
+				text-decoration: none;
+			}
+		}
+	}
+}
+
+#soundcloud-url {
+	// typo
+	.sc-font-light();
+	font-size: 22px;
+	text-shadow: 0 1px 1px rgba(0,0,0,.2);
+
+	// box sizing
+	padding: 18px 20px;
+	width: @inputWidth;
+	border: none;
+	box-sizing: border-box;
+	float: left;
+
+	// box styles
+	outline: none;
+	background: darken(#fff, 8%);
+	.border-radius(~"5px 0 0 5px"); // border radius
+	.box-shadow(~"inset 0 1px 3px rgba(0,0,0,.3)"); // inner shadow
+	.transition(~"background .3s ease-in-out");
+
+	// placeholder
+	&::-webkit-input-placeholder,
+	&::-moz-placeholder {
+		color: #777;
+		text-shadow: 0 1px 1px rgba(0,0,0,.2);
+	}
+
+	// focus
+	&:focus {
+		background: #fff;
+	}
+}
+
+#start-journey {
+	// typo
+	.sc-font();
+	font-size: 22px;
+	color: #fff;
+	text-shadow: 0 1px 1px rgba(0,0,0,.5); // drop shadow
+	
+	// sizing
+	padding: 17px 40px;
+	box-sizing: border-box;
+	float: left;
+
+	// styles
+	border: 1px solid #c53321; // stroke
+	.border-radius(~"0 5px 5px 0"); // border radius
+	background-color: #f60; // layer fill content
+	.box-shadow(~"inset 0 1px 1px rgba(255,255,255,.25)"); // inner shadow
+	.background-image(~"linear-gradient(bottom, #ff1900 0%, #ff6500 100%)"); // gradient overlay
+	.transition(~"background .3s ease-in-out");
+
+	// hover
+	&:hover,
+	&:focus {
+		.background-image(~"linear-gradient(bottom, #ff4733 0%, #ff8433 100%)"); // gradient overlay
+	}
+}
