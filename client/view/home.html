@@ -1,12 +1,17 @@
 <template name="home">
-  {{#if resuming}}
-    Loading last point...
-  {{else}}
-    <input id="soundcloud-url" value="{{defaultUrl}}" />
-    {{#if badUrl}}bad url{{/if}}
-    <button id="start-journey" {{#if notReady}}disabled="disabled"{{/if}}>
-      Start journey
-    </button>
-    {{#if pending}}Preparing vehicle...{{/if}}
-  {{/if}}
+  <div class="home">
+    <div class="centered">
+      {{#if resuming}}
+        Loading last point...
+      {{else}}
+        <input id="soundcloud-url" value="{{defaultUrl}}" placeholder="Enter a SoundCloud URL" />
+        {{#if badUrl}}bad url{{/if}}
+        <button id="start-journey" {{#if notReady}}disabled="disabled"{{/if}}>
+          Start journey
+        </button>
+        <p>Driven by <a href="http://meteor.com">Meteor</a> and <a href="http://soundcloud.com">SoundCloud</a> since 2013</p>
+        {{#if pending}}Preparing vehicle...{{/if}}
+      {{/if}}
+    </div>
+  </div>
 </template>
