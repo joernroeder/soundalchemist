@@ -1,0 +1,64 @@
+
+.player {
+	padding: 0 50px;
+
+	aside {
+		padding: 0 10px;
+		width: 230px;
+		position: relative;
+
+		&:not(:last-child) {
+			padding-bottom: 20px;
+			margin-bottom: 30px;
+
+			border-bottom: 1px solid #333;
+		
+			&:before {
+				position: absolute;
+				display: block;
+				content: '';
+				border-bottom: 1px solid #1f1f1f;
+				height: 100%;
+				width: 100%;
+				left: 0;
+				.box-sizing(border-box);
+			}
+			
+			//border-bottom: 1px ridge #333;
+		}
+
+		h1 {
+			.sc-font-light;
+			font-size: @headingSize;
+			color: @headingColor;
+			text-shadow: 0 2px 4px rgba(0, 0, 0, .3); 
+			margin: 0 0 5px;
+		}
+
+		ul {
+			list-style: none;
+			margin: 0;
+			padding: 0;
+			overflow: hidden;
+
+			li {
+				display: inline-block;
+				float: left;
+				.box-shadow(~"0 2px 3px rgba(0, 0, 0, .3)"); // drop shadow
+				margin: 0 10px 10px 0;
+
+				&:nth-child(3n) {
+					margin-right: 0;
+				}
+			}
+
+			img {
+				display: block;
+				width: @inOutWardsDimension;
+				height: @inOutWardsDimension;
+
+				background: lighten(@bgColor, 10%);
+			}
+		}
+	}
+}

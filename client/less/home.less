@@ -40,6 +40,7 @@
 		a {
 			color: @color;
 			text-decoration: underline;
+			outline: none;
 
 			&:hover,
 			&:focus {
@@ -96,12 +97,13 @@
 	float: left;
 
 	// styles
+	outline: none;
 	border: 1px solid #c53321; // stroke
 	.border-radius(~"0 5px 5px 0"); // border radius
 	background-color: #f60; // layer fill content
 	.box-shadow(~"inset 0 1px 1px rgba(255,255,255,.25)"); // inner shadow
 	.background-image(~"linear-gradient(bottom, #ff1900 0%, #ff6500 100%)"); // gradient overlay
-	.transition(~"background .3s ease-in-out");
+	.transition(~"background-image .3s ease-in-out");
 
 	// hover
 	&:hover,
