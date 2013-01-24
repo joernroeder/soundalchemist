@@ -20,3 +20,10 @@ Template.outwards.list = function () {
 
 	return result;
 };
+
+Template.outwards.events = {
+	'click img': function () {
+		alert('fucka bar');
+		//setTrackId(this.trackId);
+	}
+};

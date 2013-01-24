@@ -414,23 +414,25 @@ textarea {
   padding: 0 10px;
   width: 230px;
   position: relative;
+  z-index: 10;
 }
 .player aside:not(:last-child) {
   padding-bottom: 20px;
   margin-bottom: 30px;
   border-bottom: 1px solid #333;
 }
-.player aside:not(:last-child):before {
+.player aside:not(:last-child):after {
   position: absolute;
   display: block;
   content: '';
   border-bottom: 1px solid #1f1f1f;
-  height: 100%;
   width: 100%;
   left: 0;
+  bottom: 0;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
+  z-index: 1;
 }
 .player aside h1 {
   font-family: "Interstate", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Garuda, Verdana, Tahoma, sans-serif;
@@ -464,6 +466,7 @@ textarea {
   width: 70px;
   height: 70px;
   background: #404040;
+  cursor: pointer;
 }
 html,
 body {

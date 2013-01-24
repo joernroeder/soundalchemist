@@ -20,3 +20,10 @@ Template.inwards.list = function () {
 
 	return result;
 };
+
+Template.inwards.events = {
+	'click img': function () {
+		alert('foo');
+		//setTrackId(this.trackId);
+	}
+};
