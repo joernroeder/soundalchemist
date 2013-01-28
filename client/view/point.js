@@ -15,6 +15,7 @@ SoundAlchemist.view.point = function(pt) {
   }
 };
 SoundAlchemist.view.pointTrack = function(pt, track) {
+  console.log('pointTrack');
   SoundAlchemist.view.point(pt);
   setTrackId(track);
 };
@@ -41,8 +42,6 @@ SoundAlchemist.view.point.isotopeInit = function() {
   // - with experimental masonry gutterWidth setting:
   //   http://masonry.desandro.com/demos/gutters.html
   //   http://isotope.metafizzy.co/custom-layout-modes/masonry-gutters.html
-  console.info('test isotope');
-  console.log($('.recommendations'));
   $('.recommendations').isotope({
     animationOptions: {
       duration: 350,
