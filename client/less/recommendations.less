@@ -36,9 +36,29 @@
 			}
 		}
 
+		&.s1 {
+			@dim: 63px;
+			width: @dim;
+			height: @dim;
+		}
+
+		&.s2 {
+			@dim: 100px;
+			width: @dim;
+			height: @dim;
+		}
+
+		&.s3 {
+			@dim: 210px;
+			width: @dim;
+			height: @dim;
+		}
+
 		img {
-			.opacity(.5);
+			.opacity(@recommendationOpacity);
 			.transition(~"opacity .1s linear, box-shadow .5s linear");
+			width: 100%;
+			height: 100%;
 		}
 	}
 
