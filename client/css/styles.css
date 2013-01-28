@@ -486,6 +486,7 @@ textarea {
 .recommendations article {
   display: inline-block;
   position: relative;
+  background: #404040;
   width: 100px;
   height: 100px;
   margin: 5px;
@@ -499,13 +500,28 @@ textarea {
   -moz-background-clip: padding;
   border-radius: 2px;
   background-clip: padding-box;
-  opacity: .5;
-  border: 0 solid red;
   cursor: pointer;
 }
 .recommendations article:hover {
+  -webkit-box-shadow: 0 0 0 1px #262626, 0 0 0 4px #00ff99, 0 2px 3px rgba(0, 0, 0, .3);
+  -moz-box-shadow: 0 0 0 1px #262626, 0 0 0 4px #00ff99, 0 2px 3px rgba(0, 0, 0, .3);
+  box-shadow: 0 0 0 1px #262626, 0 0 0 4px #00ff99, 0 2px 3px rgba(0, 0, 0, .3);
+  color: 0 0 0 1px #262626, 0 0 0 4px #00ff99, 0 2px 3px rgba(0, 0, 0, .3);
+}
+.recommendations article:hover img {
+  -webkit-opacity: 1;
+  -moz-opacity: 1;
   opacity: 1;
-  border-width: 3px;
+}
+.recommendations article img {
+  -webkit-opacity: 0.5;
+  -moz-opacity: 0.5;
+  opacity: 0.5;
+  -webkit-transition: opacity .1s linear, -webkit-box-shadow .5s linear;
+  -moz-transition: opacity .1s linear, -moz-box-shadow .5s linear;
+  -o-transition: opacity .1s linear, box-shadow .5s linear;
+  -ms-transition: opacity .1s linear, box-shadow .5s linear;
+  transition: opacity .1s linear, box-shadow .5s linear;
 }
 .isotope,
 .isotope .isotope-item {
