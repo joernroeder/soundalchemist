@@ -23,7 +23,6 @@ Template.inwards.list = function () {
 
 Template.inwards.events = {
 	'click img': function () {
-		alert('foo');
-		//setTrackId(this.trackId);
+		setTrackId(this.trackId);
 	}
 };

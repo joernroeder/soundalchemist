@@ -23,7 +23,6 @@ Template.outwards.list = function () {
 
 Template.outwards.events = {
 	'click img': function () {
-		alert('fucka bar');
-		//setTrackId(this.trackId);
+		setTrackId(this.trackId);
 	}
 };

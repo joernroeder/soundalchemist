@@ -409,12 +409,17 @@ textarea {
 }
 .player {
   padding: 0 50px;
+  position: fixed;
+  top: 0;
 }
 .player aside {
   padding: 0 10px;
-  width: 230px;
+  width: 250px;
   position: relative;
   z-index: 10;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
 .player aside:not(:last-child) {
   padding-bottom: 20px;
@@ -468,10 +473,81 @@ textarea {
   background: #404040;
   cursor: pointer;
 }
+.recommendations {
+  width: 100%;
+  min-height: 100%;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  padding-left: 350px;
+  padding-right: 25px;
+  position: relative;
+}
+.recommendations article {
+  display: inline-block;
+  position: relative;
+  width: 100px;
+  height: 100px;
+  margin: 5px;
+  -webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, .3);
+  -moz-box-shadow: 0 2px 3px rgba(0, 0, 0, .3);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, .3);
+  color: 0 2px 3px rgba(0, 0, 0, .3);
+  -webkit-border-radius: 2px;
+  -webkit-background-clip: padding-box;
+  -moz-border-radius: 2px;
+  -moz-background-clip: padding;
+  border-radius: 2px;
+  background-clip: padding-box;
+  opacity: .5;
+  border: 0 solid red;
+  cursor: pointer;
+}
+.recommendations article:hover {
+  opacity: 1;
+  border-width: 3px;
+}
+.isotope,
+.isotope .isotope-item {
+  /* change duration value to whatever you like */
+
+  -webkit-transition-duration: 0.3s;
+  -moz-transition-duration: 0.3s;
+  -ms-transition-duration: 0.3s;
+  -o-transition-duration: 0.3s;
+  transition-duration: 0.3s;
+}
+.isotope {
+  -webkit-transition-property: height, width;
+  -moz-transition-property: height, width;
+  -ms-transition-property: height, width;
+  -o-transition-property: height, width;
+  transition-property: height, width;
+}
+.isotope .isotope-item {
+  -webkit-transition-property: -webkit-transform, opacity, outline-width;
+  -moz-transition-property: -moz-transform, opacity, outline-width;
+  -ms-transition-property: -ms-transform, opacity, outline-width;
+  -o-transition-property: -o-transform, opacity, outline-width;
+  transition-property: transform, opacity, outline-width;
+}
+/**** disabling Isotope CSS3 transitions ****/
+.isotope.no-transition,
+.isotope.no-transition .isotope-item,
+.isotope .isotope-item.no-transition {
+  -webkit-transition-duration: 0s;
+  -moz-transition-duration: 0s;
+  -ms-transition-duration: 0s;
+  -o-transition-duration: 0s;
+  transition-duration: 0s;
+}
 html,
 body {
   height: 100%;
 }
 body {
   background-color: #262626;
+}
+.is-point {
+  overflow: hidden;
 }

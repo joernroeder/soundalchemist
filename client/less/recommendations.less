@@ -1,0 +1,75 @@
+
+.recommendations {
+	width: 100%;
+	min-height: 100%;
+	.box-sizing(border-box);
+	padding-left: @playerWidth + (@playerMarginVertical * 2);
+	padding-right: @playerMarginVertical / 2;
+	position: relative;
+
+	article {
+		display: inline-block;
+		position: relative;
+		//overflow: hidden;
+		width: 100px;
+		height: 100px;
+		margin: 5px;
+		.box-shadow(~"0 2px 3px rgba(0, 0, 0, .3)"); // drop shadow
+
+		.border-radius(2px);
+
+		opacity: .5;
+		border: 0 solid red;
+		//outline-offset: 1px;
+		cursor: pointer;
+		//outline-width: 0;
+
+		&:hover {
+			opacity: 1;
+			//box-shadow: 0px 0px 3pt 2pt red;
+			border-width: 3px;
+		}
+	}
+
+}
+
+
+// ! Isotope CSS transitions
+
+.isotope,
+.isotope .isotope-item {
+  /* change duration value to whatever you like */
+  -webkit-transition-duration: 0.3s;
+     -moz-transition-duration: 0.3s;
+      -ms-transition-duration: 0.3s;
+       -o-transition-duration: 0.3s;
+          transition-duration: 0.3s;
+}
+
+.isotope {
+  -webkit-transition-property: height, width;
+     -moz-transition-property: height, width;
+      -ms-transition-property: height, width;
+       -o-transition-property: height, width;
+          transition-property: height, width;
+}
+
+.isotope .isotope-item {
+  -webkit-transition-property: -webkit-transform, opacity, outline-width;
+     -moz-transition-property:    -moz-transform, opacity, outline-width;
+      -ms-transition-property:     -ms-transform, opacity, outline-width;
+       -o-transition-property:      -o-transform, opacity, outline-width;
+          transition-property:         transform, opacity, outline-width;
+}
+
+/**** disabling Isotope CSS3 transitions ****/
+
+.isotope.no-transition,
+.isotope.no-transition .isotope-item,
+.isotope .isotope-item.no-transition {
+  -webkit-transition-duration: 0s;
+     -moz-transition-duration: 0s;
+      -ms-transition-duration: 0s;
+       -o-transition-duration: 0s;
+          transition-duration: 0s;
+}

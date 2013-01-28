@@ -31,24 +31,29 @@ Template.point.isPlaying = function () {
   return !!Session.get('player:trackId');
 };
 
+SoundAlchemist.view.point.hasIsotope = false;
 SoundAlchemist.view.point.isotopeInit = function() {
+
   Meteor.flush();
+ 
   // console.log('DEBUG: initializing Initialize.');
   // isotope isotope
   // - with experimental masonry gutterWidth setting:
   //   http://masonry.desandro.com/demos/gutters.html
   //   http://isotope.metafizzy.co/custom-layout-modes/masonry-gutters.html
+  console.info('test isotope');
+  console.log($('.recommendations'));
   $('.recommendations').isotope({
     animationOptions: {
-      duration: 750,
-      easing: 'linear',
+      duration: 350,
+      easing: 'swing',
       queue: false
     },
     masonry: {
-      columnWidth: 56,
-      gutterWidth: 6
+      columnWidth: 110,
+      gutterWidth: 10
     },
-    animationEngine: 'jquery' // TODO(gregp): use css3 transitions
+    animationEngine: 'best-available' // TODO(gregp): use css3 transitions
   });
 };
 

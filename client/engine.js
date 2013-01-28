@@ -83,9 +83,12 @@ var ensurePointCached = function (pointId, callback) {
 Meteor.autorun(function () {
   var play = function () {
     _SA.getPointRec(function () {
+      console.log('---------- FUCKA FUCKA ---------------------');
       if (!Session.get('player:trackId')) {
-        doAutoPlay();
+        console.log(doAutoPlay);
+        //doAutoPlay();
       }
+      console.log('ISOTOPE INIT');
       SoundAlchemist.view.point.isotopeInit();
     });
   };

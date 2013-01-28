@@ -1,13 +1,13 @@
 <template name="recommendations">
-  <div class="recommendations">
+  <section class="recommendations">
     {{#each list}}
       {{> recommendation}}
     {{/each}}
-  </div>
+  </section>
 </template>
 
 <template name="recommendation">
-  <div class="recommendation s{{size}}">
+  <article class="s{{size}}">
     {{> soundcloudImg}}
-  </div>
+  </article>
 </template>
