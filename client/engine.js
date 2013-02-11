@@ -83,6 +83,7 @@ var ensurePointCached = function (pointId, callback) {
 Meteor.autorun(function () {
   var play = function () {
     _SA.getPointRec(function () {
+      SoundAlchemist.view.point.scPlayerInit();
       if (!Session.get('player:trackId')) {
         //doAutoPlay();
       }

@@ -1,5 +1,5 @@
 Template.recommendations.rendered = function () {
-  console.log('xcxc recommendations rendered: ', new Date);
+  //console.log('xcxc recommendations rendered: ', new Date);
 };
 
 Template.recommendations.list = function () {

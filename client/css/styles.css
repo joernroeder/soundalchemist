@@ -407,26 +407,44 @@ textarea {
   background-image: -o-linear-gradient(bottom, #ff4733 0%, #ff8433 100%);
   background-image: linear-gradient(bottom, #ff4733 0%, #ff8433 100%);
 }
+.super-player-class {
+  display: inline-block;
+  width: 250px;
+}
+.sc-player .sc-artwork-list,
+.sc-player .sc-trackslist {
+  display: none;
+}
+.sc-player .sc-info p {
+  display: none;
+}
 .player {
   padding: 0 50px;
   position: fixed;
   top: 0;
   z-index: 2;
 }
-.player section {
+.player section,
+.player .sc-player {
   display: inline-block;
   width: 200px;
   position: relative;
   margin: 50px 0 50px 25px;
 }
 .player section img,
+.player .sc-player img,
 .player section .flip,
+.player .sc-player .flip,
 .player section .full,
+.player .sc-player .full,
 .player section .half,
-.player section .options {
+.player .sc-player .half,
+.player section .options,
+.player .sc-player .options {
   border-radius: 0;
 }
-.player section .flip {
+.player section .flip,
+.player .sc-player .flip {
   width: 200px;
   height: 200px;
   float: left;
@@ -438,7 +456,8 @@ textarea {
   -webkit-transform-style: preserve-3d;
   -webkit-transform-origin: left;
 }
-.player section .title {
+.player section .title,
+.player .sc-player .title {
   float: left;
   font-family: "Interstate", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Garuda, Verdana, Tahoma, sans-serif;
   font-weight: 100;
@@ -451,21 +470,24 @@ textarea {
   font-size: 14px;
   text-shadow: 0px 1px 1px #000;
 }
-.player section .main {
+.player section .main,
+.player .sc-player .main {
   font-size: 30px;
   text-transform: uppercase;
   width: 300px;
   margin-left: -50px;
   margin-bottom: 40px;
 }
-.player section .full {
+.player section .full,
+.player .sc-player .full {
   position: absolute;
   width: 50%;
   height: 100%;
   z-index: 30;
   overflow: hidden;
 }
-.player section .half {
+.player section .half,
+.player .sc-player .half {
   position: absolute;
   width: 100%;
   height: 100%;
@@ -476,20 +498,29 @@ textarea {
   background: -webkit-gradient(linear, left top, right top, color-stop(50%, #000000), color-stop(67%, #4c4c4c), color-stop(100%, #444444));
   -webkit-transition: -webkit-transform 0.5s ease-out;
 }
-.player section .half img {
+.player section .half img,
+.player .sc-player .half img {
   -webkit-transition: opacity 0.5s ease-out;
 }
-.player section .flip:hover > .half {
+.player section .flip:hover > .half,
+.player .sc-player .flip:hover > .half {
   -webkit-transform: rotatey(-70deg);
 }
-.player section .flip:hover > .half img {
+.player section .flip:hover > .half img,
+.player .sc-player .flip:hover > .half img {
   opacity: 0.7;
 }
-.player section .flip:hover > .options {
+.player section .flip:hover > .options,
+.player .sc-player .flip:hover > .options,
+.player section .flip:hover > .sc-controls,
+.player .sc-player .flip:hover > .sc-controls {
   /*-webkit-transform: translate(20px,0);*/
 
 }
-.player section .flip .options {
+.player section .flip .options,
+.player .sc-player .flip .options,
+.player section .flip .sc-controls,
+.player .sc-player .flip .sc-controls {
   z-index: 2;
   position: absolute;
   width: 50%;
@@ -500,7 +531,10 @@ textarea {
   -webkit-transition: -webkit-transform 0.5s ease-out;
   -webkit-box-shadow: inset 0px 6px 10px #ffffff;
 }
-.player section .options a {
+.player section .options a,
+.player .sc-player .options a,
+.player section .sc-controls a,
+.player .sc-player .sc-controls a {
   height: 67px;
   width: 80px;
   margin-left: 20px;
@@ -510,26 +544,47 @@ textarea {
   background-position: 33px 18px;
   background-repeat: no-repeat;
 }
-.player section .options a:hover {
+.player section .options a a:hover,
+.player .sc-player .options a a:hover,
+.player section .sc-controls a a:hover,
+.player .sc-player .sc-controls a a:hover {
   -webkit-transition: all 0.1s ease-out;
 }
-.player section .options a.play:hover {
+.player section .options a a:hover.play,
+.player .sc-player .options a a:hover.play,
+.player section .sc-controls a a:hover.play,
+.player .sc-player .sc-controls a a:hover.play {
   -webkit-box-shadow: inset 0px 2px 10px rgba(0, 0, 0, 0.5);
 }
-.player section .options a.like:hover {
+.player section .options a a:hover.like,
+.player .sc-player .options a a:hover.like,
+.player section .sc-controls a a:hover.like,
+.player .sc-player .sc-controls a a:hover.like {
   -webkit-box-shadow: inset 0px -1px 10px rgba(0, 0, 0, 0.5);
 }
-.player section .options a.share:hover {
+.player section .options a a:hover.share,
+.player .sc-player .options a a:hover.share,
+.player section .sc-controls a a:hover.share,
+.player .sc-player .sc-controls a a:hover.share {
   -webkit-box-shadow: inset 0px -2px 10px rgba(0, 0, 0, 0.5);
 }
-.player section a.play {
+.player section .options a a.play,
+.player .sc-player .options a a.play,
+.player section .sc-controls a a.play,
+.player .sc-player .sc-controls a a.play {
   border-top-right-radius: 3px;
   background-image: url('http://danamajid.com/labs/flippingmp/play.png');
 }
-.player section a.like {
+.player section .options a a.like,
+.player .sc-player .options a a.like,
+.player section .sc-controls a a.like,
+.player .sc-player .sc-controls a a.like {
   background-image: url('http://danamajid.com/labs/flippingmp/like.png');
 }
-.player section a.share {
+.player section .options a a.share,
+.player .sc-player .options a a.share,
+.player section .sc-controls a a.share,
+.player .sc-player .sc-controls a a.share {
   background-image: url('http://danamajid.com/labs/flippingmp/share.png');
   height: 66px;
   border-bottom-right-radius: 3px;
@@ -674,6 +729,12 @@ textarea {
   transition: opacity .1s linear, box-shadow .5s linear;
   width: 100%;
   height: 100%;
+  -webkit-border-radius: 2px;
+  -webkit-background-clip: padding-box;
+  -moz-border-radius: 2px;
+  -moz-background-clip: padding;
+  border-radius: 2px;
+  background-clip: padding-box;
 }
 .isotope,
 .isotope .isotope-item {

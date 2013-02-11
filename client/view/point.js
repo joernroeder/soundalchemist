@@ -56,6 +56,71 @@ SoundAlchemist.view.point.isotopeInit = function() {
   });
 };
 
+// small player api wrapper
+SoundAlchemist.view.point.scPlayer = {
+  $el: null,
+
+  options: {
+    autoPlay: isProd()
+  },
+
+  play: function (trackId) {
+    var opts = {
+        links: [{
+          url: 'http://api.soundcloud.com/tracks/' + trackId
+        }]
+      };
+
+    this.$el.scPlayer($.extend({}, this.options, opts));
+  },
+
+  registerListeners: function () {
+    this.$el.on('onPlayerInit', function (event) {
+      console.log(event.target, 'it\'s playing!');
+    });
+  },
+
+  updateDom: function () {
+    this.$el.prepend('<div class="flip"><div class="half">FOO</div></div>');
+    console.log(this.$el.html());
+  },
+
+  init: function () {
+    console.log('INIT PLAYER');
+    var trackId = Session.get('player:trackId');
+    if (this.$el) {
+      this.registerListeners();
+
+      if (trackId) {
+        this.play(trackId);
+      }
+    }
+  }
+};
+
+SoundAlchemist.view.point.scPlayerInit = function () {
+  Meteor.flush();
+  var $potentialWidgetEl = $('#sc-player');
+  
+  //$.scPlayer.defaults.apiKey = 'alchemist';
+  
+  console.log('scPlayerInit');
+  console.log($potentialWidgetEl);
+  $potentialWidgetEl.scPlayer({
+    links: [{
+      //url: "http://soundcloud.com/matas/hobnotropic",
+      url: "http://api.soundcloud.com/tracks/63390081"
+    }],
+    beforeRender  :   function(tracksData) {
+      var $player = $(this);
+      $player.addClass('super-player-class');
+      SoundAlchemist.view.point.scPlayer.$el = $player;
+      SoundAlchemist.view.point.scPlayer.init();
+      SoundAlchemist.view.point.scPlayer.updateDom();
+    }
+  });
+};
+
 
 var setPointId = function(newPointId) {
   console.log('navigating to ', newPointId);
@@ -81,10 +146,10 @@ var setTrackId = function(trackId) {
     Session.set('player:outwardPoint', null);
     Meteor.call('makeTrackRec', trackId, orient);
 
-    getWidget().load('http://api.soundcloud.com/tracks/' + trackId, {
+    /*getWidget().load('http://api.soundcloud.com/tracks/' + trackId, {
       auto_play: isProd(), // thank you greg
-    });
-    registerWidgetListeners();
+    });*/
+    //registerWidgetListeners();
     Session.set('player:trackId', trackId);
   }
 };
@@ -124,13 +189,10 @@ var orient = function(insideAutorun) {
 
 var getWidget = function() {
   Meteor.flush();
-  var potentialWidgetEl = $('#playa').get(0);
-  if (!potentialWidgetEl) {
-    throw "couldn't find soundcloud player";
-  }
+  var potentialWidgetEl = $('.sc-player');
 
   // console.log('found soundcloud player', potentialWidgetEl);
-  return SC.Widget(potentialWidgetEl);
+  return potentialWidgetEl;
 };
 
 var registerWidgetListeners = function() {

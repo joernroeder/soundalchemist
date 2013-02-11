@@ -10,20 +10,23 @@
 
 <template name="player">
 	<!-- player comes from http://jsfiddle.net/michalkopanski/dfxTY/embedded/result/ -->
-	<div class="flip">
-		<div class="half">
-			<img src="{{imageUrl}}" />
-			<!--<img width="200" height="200" src="http://danamajid.com/labs/flippingmp/babel.png">-->
+	<section id="sc-player"></section>
+	<section id="foo-sc-player">
+		<div class="flip">
+			<div class="half">
+				<img src="{{imageUrl}}" />
+				<!--<img width="200" height="200" src="http://danamajid.com/labs/flippingmp/babel.png">-->
+			</div>
+			<div class="options">
+				<a href="http://danamajid.com/labs/flippingmp/#" class="play"></a>
+				<a href="http://danamajid.com/labs/flippingmp/#" class="like"></a>
+				<a href="http://danamajid.com/labs/flippingmp/#" class="share"></a>
+			</div>
+			<div class="full">
+				<img src="{{imageUrl}}" />
+				<!--<img width="200" height="200" src="http://danamajid.com/labs/flippingmp/babel.png">-->
+			</div>
 		</div>
-		<div class="options">
-			<a href="http://danamajid.com/labs/flippingmp/#" class="play"></a>
-			<a href="http://danamajid.com/labs/flippingmp/#" class="like"></a>
-			<a href="http://danamajid.com/labs/flippingmp/#" class="share"></a>
-		</div>
-		<div class="full">
-			<img src="{{imageUrl}}" />
-			<!--<img width="200" height="200" src="http://danamajid.com/labs/flippingmp/babel.png">-->
-		</div>
-	</div>
-	<div class="title">Mumford &amp; Sons - Babel</div>
+		<div class="title">Mumford &amp; Sons - Babel</div>
+	</section>
 </template>

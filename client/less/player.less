@@ -1,4 +1,22 @@
 
+.super-player-class {
+	display: inline-block;
+	width: 250px;
+}
+
+.sc-player {
+	.sc-artwork-list,
+	.sc-trackslist {
+		display: none;
+	}
+
+	.sc-info {
+		p {
+			display: none;
+		}
+	}
+}
+
 .player {
 	//float: left;
 	padding: 0 @playerMarginVertical;
@@ -7,7 +25,8 @@
 	z-index: 2;
 
 	// the player comes from http://jsfiddle.net/michalkopanski/dfxTY/embedded/result/
-	section {
+	section,
+	.sc-player {
 		@width: 200px;
 		display: inline-block;
 		width: @width;
@@ -86,11 +105,13 @@
 			opacity: 0.7;
 		}
 		
-		.flip:hover > .options {
+		.flip:hover > .options,
+		.flip:hover > .sc-controls {
 			/*-webkit-transform: translate(20px,0);*/
 		}
 		
-		.flip .options {
+		.flip .options,
+		.flip .sc-controls {
 			z-index: 2;
 			position: absolute;
 			width: 50%;
@@ -102,7 +123,8 @@
 			-webkit-box-shadow: inset 0px 6px 10px #ffffff;
 		}
 		
-		.options a {
+		.options a,
+		.sc-controls a {
 			height: 67px;
 			width: 80px;
 			margin-left: 20px;
@@ -111,36 +133,38 @@
 			background-size: 33px;
 			background-position: 33px 18px;
 			background-repeat: no-repeat;    
-		}
-		
-		.options a:hover {
-			-webkit-transition: all 0.1s ease-out;
-		}
-		.options a.play:hover {
-			-webkit-box-shadow: inset 0px 2px 10px rgba(0,0,0,0.5);
-		}
-		.options a.like:hover {
-			-webkit-box-shadow: inset 0px -1px 10px rgba(0,0,0,0.5);
-		}
-		.options a.share:hover {
-			-webkit-box-shadow: inset 0px -2px 10px rgba(0,0,0,0.5);
-		}
-		
-		a.play {
-			border-top-right-radius: 3px;
-			background-image: url('http://danamajid.com/labs/flippingmp/play.png');
 			
-		}
+			a:hover {
+				-webkit-transition: all 0.1s ease-out;
+
+				&.play {
+					-webkit-box-shadow: inset 0px 2px 10px rgba(0,0,0,0.5);
+				}
+
+				&.like {
+					-webkit-box-shadow: inset 0px -1px 10px rgba(0,0,0,0.5);
+				}
+
+				&.share {
+					-webkit-box-shadow: inset 0px -2px 10px rgba(0,0,0,0.5);
+				}
+			}
 		
-		a.like {
-			background-image: url('http://danamajid.com/labs/flippingmp/like.png');
-		}
+			a.play {
+				border-top-right-radius: 3px;
+				background-image: url('http://danamajid.com/labs/flippingmp/play.png');
+			}
 		
-		a.share {
-			background-image: url('http://danamajid.com/labs/flippingmp/share.png');
-			height: 66px;
-			border-bottom-right-radius: 3px;
-			border-bottom: none;
+			a.like {
+				background-image: url('http://danamajid.com/labs/flippingmp/like.png');
+			}
+		
+			a.share {
+				background-image: url('http://danamajid.com/labs/flippingmp/share.png');
+				height: 66px;
+				border-bottom-right-radius: 3px;
+				border-bottom: none;
+			}
 		}
 	}
 
